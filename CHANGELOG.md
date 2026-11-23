@@ -4,6 +4,15 @@
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), версии —
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.3] - 2026-11-23
+
+### Исправлено
+
+- Высота полотна учитывает вертикальные поля полупрозрачной рамки подписи
+  (`top` + `bot`, около `0.3 · labelSize`). Рамка «налоги» больше не задевает
+  «амортизацию»; русский P&L — 900 px по высоте вместо 850, ширина осталась
+  850.
+
 ## [0.2.2] - 2026-11-23
 
 ### Добавлено
@@ -92,6 +101,7 @@
 - Документация: README, справочники по моделированию, синтаксису и палитрам,
   AGENTS.md, NOTICE с атрибуцией ISC/MIT.
 
+[0.2.3]: https://github.com/teterkin/sankeymatic/releases/tag/v0.2.3
 [0.2.2]: https://github.com/teterkin/sankeymatic/releases/tag/v0.2.2
 [0.2.1]: https://github.com/teterkin/sankeymatic/releases/tag/v0.2.1
 [0.2.0]: https://github.com/teterkin/sankeymatic/releases/tag/v0.2.0

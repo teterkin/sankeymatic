@@ -28,7 +28,7 @@ test('считает стадии и подбирает полотно для р
   });
   assert.equal(plan.stages, 5);
   assert.equal(plan.width, 850);
-  assert.equal(plan.height, 850);
+  assert.equal(plan.height, 900);
 
   const out = layoutSource(RU);
   const expected = validate(out);
@@ -40,7 +40,7 @@ test('считает стадии и подбирает полотно для р
   assert.match(out, /^labelposition scheme auto$/m);
   assert.match(out, /^labels relativesize 100$/m);
   assert.match(out, /^size w 850$/m);
-  assert.match(out, /^size h 850$/m);
+  assert.match(out, /^size h 900$/m);
 
   for (const name of Object.keys(expected.stats.nodesByName)) {
     for (const part of name.split('\\n')) {

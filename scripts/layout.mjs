@@ -161,7 +161,9 @@ export function planLayout(flows, options = {}) {
   }
   const greatest = Math.max(...nodesPerStage);
   const maxLines = Math.max(...linesPerStage.map((lines) => lines + 1));
-  const labelHeight = maxLines * cfg.labelSize * cfg.lineHeight + 12;
+  const frameHeight = cfg.labelSize * 0.5 * 0.6;
+  const labelHeight = maxLines * cfg.labelSize * cfg.lineHeight
+    + frameHeight + 10;
   const spacingFactor = (1 - cfg.nodeHF) * cfg.spacing;
   const rawHeight = spacingFactor > 0.01 && greatest > 1
     ? cfg.marginT + cfg.marginB + greatest
