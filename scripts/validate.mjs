@@ -218,32 +218,44 @@ export function validate(text) {
   }
 
   const state = new Map();
-  const stack = [];
-  function visit(name) {
-    state.set(name, 1);
-    stack.push(name);
-    for (const edge of adjacency.get(name) ?? []) {
-      if (edge.target === name) {
+  const path = [];
+  for (const flow of flows) {
+    if (state.has(flow.source)) {
+      continue;
+    }
+    state.set(flow.source, 1);
+    path.push(flow.source);
+    const stack = [{ name: flow.source, edges: adjacency.get(flow.source) ?? [], next: 0 }];
+    while (stack.length) {
+      const frame = stack[stack.length - 1];
+      if (frame.next >= frame.edges.length) {
+        state.set(frame.name, 2);
+        path.pop();
+        stack.pop();
+        continue;
+      }
+      const edge = frame.edges[frame.next];
+      frame.next += 1;
+      if (edge.target === frame.name) {
         errors.push({
           line: edge.line,
-          message: `цикл: "${name}" -> "${name}"`,
+          message: `цикл: "${frame.name}" -> "${frame.name}"`,
         });
       } else if (state.get(edge.target) === 1) {
-        const start = stack.indexOf(edge.target);
-        const path = [...stack.slice(start), edge.target]
+        const start = path.indexOf(edge.target);
+        const cycle = [...path.slice(start), edge.target]
           .map((node) => `"${node}"`)
           .join(' -> ');
-        errors.push({ line: edge.line, message: `цикл: ${path}` });
+        errors.push({ line: edge.line, message: `цикл: ${cycle}` });
       } else if (!state.has(edge.target)) {
-        visit(edge.target);
+        state.set(edge.target, 1);
+        path.push(edge.target);
+        stack.push({
+          name: edge.target,
+          edges: adjacency.get(edge.target) ?? [],
+          next: 0,
+        });
       }
-    }
-    stack.pop();
-    state.set(name, 2);
-  }
-  for (const flow of flows) {
-    if (!state.has(flow.source)) {
-      visit(flow.source);
     }
   }
 

@@ -71,6 +71,17 @@ test('отклоняет циклы и потоки узла в себя', () =>
   assert.match(self.errors[0].message, /цикл/i);
 });
 
+test('не падает на длинной цепочке узлов', () => {
+  const text = Array.from({ length: 20000 }, (_, i) => `n${i} [1] n${i + 1}`)
+    .join('\n');
+
+  const report = validate(text);
+
+  assert.deepEqual(report.errors, []);
+  assert.equal(report.stats.nodes, 20001);
+  assert.equal(report.stats.flows, 20000);
+});
+
 test('CLI: код 0 на чистом файле и 1 на ошибках', () => {
   const script = new URL('./validate.mjs', import.meta.url).pathname;
   const goodPath = new URL('../tests/fixtures/pl-1800.expected.txt', import.meta.url)
