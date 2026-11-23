@@ -1,87 +1,85 @@
-# PRD: OpenCode skill for SankeyMATIC
+# PRD: скилл OpenCode для SankeyMATIC
 
-Status: confirmed 2026-11-23.
+Статус: подтверждён 2026-11-23.
 
-## Goal
+## Цель
 
-Turn a user's data in one exchange into a valid SankeyMATIC diagram: four setup
-questions with defaults, a balanced flow graph, a validated `.txt` source, and a
-link that opens the finished diagram. The skill is distributed as a public
-GitHub repository and installed by cloning it into the OpenCode skills
-directory.
+За один обмен превратить данные пользователя в корректную диаграмму SankeyMATIC:
+четыре вопроса с дефолтами, сбалансированный граф потоков, проверенный `.txt` и
+ссылка, которая открывает готовую диаграмму. Скилл распространяется как публичный
+репозиторий на GitHub и ставится клонированием в каталог скиллов OpenCode.
 
-## Non-goals
+## Не-цели
 
-- Rendering PNG or SVG locally; the site exports images in the browser.
-- Automating sankeymatic.com or storing diagrams on a server.
-- Inventing, rounding or rebalancing the user's numbers.
-- Rebranding SankeyMATIC or removing its attribution.
-- Installing the skill on the author's machine as part of development.
+- Локальный рендеринг PNG или SVG: картинки экспортируются в браузере.
+- Автоматизация sankeymatic.com или хранение диаграмм на сервере.
+- Выдумывание, округление и «подгонка» чисел пользователя.
+- Перебрендирование SankeyMATIC и удаление его атрибуции.
+- Установка скилла на машину автора в рамках разработки.
 
-## User story
+## Пользовательская история
 
-As an analyst with a financial narrative and numbers, I want to paste the text
-and get a correct, good-looking Sankey diagram without learning the syntax, and
-I want to install the skill from a single link.
+Как аналитик с финансовым текстом и числами, я хочу вставить текст и получить
+корректную красивую диаграмму Sankey, не изучая синтаксис, а установить скилл по
+одной ссылке.
 
-## Decisions
+## Решения
 
-1. **Layout** — the repository root is the skill directory, so installation is
-   `git clone <url> ~/.config/opencode/skill/sankeymatic`. The directory name is
-   the skill ID.
-2. **Install prompt** — a user can tell an agent
-   "Установи скилл отсюда: <url>"; README states the exact command and the
-   detection rule for `skill/` vs `skills/`.
-3. **Questions** — exactly four, asked in one batch with the default first:
-   label size 18, node height 20, node spacing 30, theme Categories. A fifth
-   question about units is asked only when the text is ambiguous; default none.
-4. **Colors** — native SankeyMATIC themes (`a` Categories, `b` Tableau10,
+1. **Layout** — корень репозитория и есть каталог скилла, поэтому установка —
+   `git clone <url> ~/.config/opencode/skill/sankeymatic`. Имя каталога — ID
+   скилла.
+2. **Команда установки** — пользователь говорит агенту «Установи скилл отсюда:
+   <url>»; README содержит точную команду и правило выбора между `skill/` и
+   `skills/`.
+3. **Вопросы** — ровно четыре, одним блоком, дефолт первым: размер меток 18,
+   высота узлов 20, расстояние 30, тема Categories. Пятый вопрос про единицы
+   задаётся только при неоднозначности; по умолчанию единиц нет.
+4. **Цвета** — штатные темы SankeyMATIC (`a` Categories, `b` Tableau10,
    `c` Dark, `d` Varied), `flow inheritfrom source`, `flow opacity 0.45`.
-   No hand-computed blending.
-5. **Delivery** — `<slug>.txt` in the working directory, the same text in a
-   fenced block, and a `?i=` share link. Local preview on request.
-6. **Local mode** — download the pinned build, d3 and canvg into
-   `~/.cache/sankeymatic-skill/<pin>/` on first use (checksums verified), patch
-   the two CDN tags, serve on `127.0.0.1`. Nothing is vendored in the repo.
-7. **Validation** — `scripts/validate.mjs` with the settings map from the
-   pinned `build/constants.js`, plus amount, cycle, self-flow and balance
-   checks; `node:test` covers it.
-8. **Acceptance case** — the P&L fixture: 10 flows, 11 nodes, 0 imbalances.
-9. **License** — MIT for the skill; `NOTICE` carries the ISC/MIT texts of
-   SankeyMATIC, d3, canvg and lz-string.
+   Ручного смешивания hex нет.
+5. **Выдача** — `<slug>.txt` в рабочем каталоге, тот же текст в блоке кода и
+   ссылка `?i=`; локальный предпросмотр по запросу.
+6. **Локальный режим** — при первом запуске скачиваются закреплённая сборка, d3
+   и canvg в `~/.cache/sankeymatic-skill/<пин>/` с проверкой контрольных сумм,
+   два CDN-тега заменяются на локальные, сервер поднимается на `127.0.0.1`.
+   В репозитории ничего не вендорится.
+7. **Валидация** — `scripts/validate.mjs` с картой настроек из закреплённого
+   `build/constants.js`, плюс проверки сумм, циклов, потоков узла в себя и
+   балансов; покрытие — `node:test`.
+8. **Приёмочный кейс** — фикстура P&L: 10 потоков, 11 узлов, 0 дисбалансов.
+9. **Лицензия** — MIT для скилла; `NOTICE` содержит дословные тексты ISC/MIT
+   SankeyMATIC, d3, canvg и lz-string.
 
-## Acceptance criteria
+## Критерии приёмки
 
-1. `SKILL.md` is at the repository root with a description that advertises the
-   skill; after the user clones into the skills directory and runs `/reload`,
-   the skill is listed.
-2. `node --test scripts/*.test.mjs` is green.
-3. `node scripts/validate.mjs tests/fixtures/pl-1800.expected.txt` exits 0 with
-   11 nodes, 10 flows, 0 imbalances.
-4. The golden fixture contains `labelname size 18`, `node h 20`,
-   `node spacing 30`, `node theme a`, `flow inheritfrom source` and
-   `flow opacity 0.45`.
-5. `scripts/link.mjs` produces a URL whose `?i=` payload decodes back to the
-   source text.
-6. `scripts/local.mjs --check` exits 0, the patched page has no
-   `cdn.jsdelivr` reference, and the server answers 200 on `/`.
-7. The validator rejects malformed amounts, zero/negative amounts, unknown
-   settings, invalid setting values, cycles and self-flows; it warns about
-   imbalanced nodes.
-8. README contains the clone command and the install prompt.
-9. The repository is public with a description and at least five topics.
+1. `SKILL.md` лежит в корне с описанием, по которому скилл находится; после
+   клонирования в каталог скиллов и `/reload` скилл виден в списке.
+2. `node --test scripts/*.test.mjs` — зелёный.
+3. `node scripts/validate.mjs tests/fixtures/pl-1800.expected.txt` — код 0,
+   11 узлов, 10 потоков, 0 дисбалансов.
+4. Эталон содержит `labelname size 18`, `node h 20`, `node spacing 30`,
+   `node theme a`, `flow inheritfrom source`, `flow opacity 0.45`.
+5. `scripts/link.mjs` даёт URL, payload `?i=` которого декодируется обратно в
+   исходный текст.
+6. `scripts/local.mjs --check` — код 0, в странице нет `cdn.jsdelivr`, сервер
+   отвечает 200 на `/`.
+7. Валидатор отклоняет некорректные суммы, нулевые и отрицательные суммы,
+   неизвестные настройки, недопустимые значения, циклы и потоки узла в себя;
+   предупреждает о несбалансированных узлах.
+8. README содержит команду клонирования и фразу-триггер установки.
+9. Репозиторий публичный, с описанием и минимум пятью топиками.
 
-## Risks
+## Риски
 
-- The site can change the `?i=` encoding or setting names; the build is pinned,
-  the link round-trip is tested, and the local copy is frozen.
-- Theme colors follow node appearance order; the skill lists stage-0 nodes
-  first and the golden fixture locks the expected line order.
-- A share link exposes its payload; the skill warns and offers `--local`.
-- The local cache needs network on first use; afterwards it works offline.
-- ISC/MIT require keeping the notices; `NOTICE` is part of the repo.
+- Сайт может изменить кодировку `?i=` или имена настроек; сборка закреплена,
+  round-trip ссылки покрыт тестом, локальная копия заморожена.
+- Цвета темы зависят от порядка появления узлов; скилл ставит узлы первой стадии
+  первыми, а golden-фикстура фиксирует ожидаемый порядок строк.
+- Ссылка раскрывает свой payload; скилл предупреждает и предлагает `--local`.
+- Локальному кэшу нужна сеть при первом запуске; дальше он работает офлайн.
+- ISC/MIT требуют сохранить уведомления; `NOTICE` входит в репозиторий.
 
-## Sources
+## Источники
 
 - `https://sankeymatic.com/build/`, `/manual/{,syntax,colors,labels-units,misc}.html`
 - `nowthis/sankeymatic@a6d8053`: `LICENSE.txt`, `build/index.html`,

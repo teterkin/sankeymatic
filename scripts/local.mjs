@@ -65,16 +65,16 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     const dir = await ensureAssets({ log: (message) => console.error(message) });
     const page = readFileSync(resolve(dir, 'index.html'), 'utf8');
     if (page.includes('cdn.jsdelivr')) {
-      throw new Error('patched page still references a CDN');
+      throw new Error('страница всё ещё ссылается на CDN');
     }
 
     if (checkOnly) {
-      console.log(`ok: ${dir}`);
+      console.log(`ок: ${dir}`);
       process.exit(0);
     }
 
     if (!file) {
-      console.error('usage: node local.mjs <file> [--open] | node local.mjs --check');
+      console.error('использование: node local.mjs <файл> [--open] | node local.mjs --check');
       process.exit(2);
     }
 

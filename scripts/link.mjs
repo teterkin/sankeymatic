@@ -28,7 +28,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   const file = args.find((arg) => !arg.startsWith('--'));
   const baseIndex = args.indexOf('--base');
   if (!file) {
-    console.error('usage: node link.mjs <file> [--base URL]');
+    console.error('использование: node link.mjs <файл> [--base URL]');
     process.exit(2);
   }
   const base = baseIndex === -1 ? DEFAULT_BASE : args[baseIndex + 1];

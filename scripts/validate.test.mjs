@@ -9,7 +9,7 @@ const fixture = readFileSync(
   'utf8'
 );
 
-test('accepts the financial fixture and counts nodes and flows', () => {
+test('принимает финансовую фикстуру и считает узлы и потоки', () => {
   const report = validate(fixture);
   assert.deepEqual(report.errors, []);
   assert.deepEqual(report.warnings, []);
@@ -17,12 +17,12 @@ test('accepts the financial fixture and counts nodes and flows', () => {
   assert.equal(report.stats.nodes, 11);
 });
 
-test('rejects malformed and non-positive flow amounts', () => {
+test('отклоняет некорректные и неположительные суммы', () => {
   const cases = [
-    ['A [abc] B', /malformed flow/i],
-    ['A [] B', /malformed flow/i],
-    ['A [-5] B', /malformed flow/i],
-    ['A [0] B', /greater than zero/i],
+    ['A [abc] B', /некорректная строка потока/i],
+    ['A [] B', /некорректная строка потока/i],
+    ['A [-5] B', /некорректная строка потока/i],
+    ['A [0] B', /больше нуля/i],
   ];
   for (const [line, pattern] of cases) {
     const report = validate(line);
@@ -32,13 +32,13 @@ test('rejects malformed and non-positive flow amounts', () => {
   }
 });
 
-test('rejects unknown settings and invalid setting values', () => {
+test('отклоняет неизвестные настройки и недопустимые значения', () => {
   const cases = [
-    ['node themee b', /unknown setting/i],
-    ['node theme z', /invalid value/i],
-    ['node h 120', /invalid value/i],
-    ['flow opacity 1.5', /invalid value/i],
-    ['labelname size abc', /invalid value/i],
+    ['node themee b', /неизвестная настройка/i],
+    ['node theme z', /недопустимое значение/i],
+    ['node h 120', /недопустимое значение/i],
+    ['flow opacity 1.5', /недопустимое значение/i],
+    ['labelname size abc', /недопустимое значение/i],
   ];
   for (const [line, pattern] of cases) {
     const report = validate(line);
@@ -48,30 +48,30 @@ test('rejects unknown settings and invalid setting values', () => {
   }
 });
 
-test('accepts quoted unit settings', () => {
+test('принимает единицы измерения в кавычках', () => {
   const report = validate("value suffix ' у.е.'\nvalue prefix '$'\nA [1] B");
   assert.deepEqual(report.errors, []);
 });
 
-test('warns when a node does not balance its inputs and outputs', () => {
+test('предупреждает о несбалансированном узле', () => {
   const report = validate('A [900] X\nX [800] Y');
   assert.deepEqual(report.errors, []);
   assert.equal(report.warnings.length, 1);
-  assert.match(report.warnings[0].message, /"X": in 900, out 800/);
+  assert.match(report.warnings[0].message, /"X": вход 900, выход 800/);
   assert.equal(report.warnings[0].line, 2);
 });
 
-test('rejects cycles and self-flows', () => {
+test('отклоняет циклы и потоки узла в себя', () => {
   const loop = validate('A [1] B\nB [1] A');
   assert.equal(loop.errors.length, 1);
-  assert.match(loop.errors[0].message, /cycle/i);
+  assert.match(loop.errors[0].message, /цикл/i);
 
   const self = validate('A [1] A');
   assert.equal(self.errors.length, 1);
-  assert.match(self.errors[0].message, /cycle/i);
+  assert.match(self.errors[0].message, /цикл/i);
 });
 
-test('CLI exits 0 on a clean file and 1 on errors', () => {
+test('CLI: код 0 на чистом файле и 1 на ошибках', () => {
   const script = new URL('./validate.mjs', import.meta.url).pathname;
   const goodPath = new URL('../tests/fixtures/pl-1800.expected.txt', import.meta.url)
     .pathname;
@@ -79,9 +79,9 @@ test('CLI exits 0 on a clean file and 1 on errors', () => {
 
   const good = spawnSync(process.execPath, [script, goodPath], { encoding: 'utf8' });
   assert.equal(good.status, 0);
-  assert.match(good.stdout, /11 nodes, 10 flows/);
+  assert.match(good.stdout, /11 узлов, 10 потоков/);
 
   const bad = spawnSync(process.execPath, [script, badPath], { encoding: 'utf8' });
   assert.equal(bad.status, 1);
-  assert.match(bad.stdout + bad.stderr, /line 1: malformed flow/i);
+  assert.match(bad.stdout + bad.stderr, /строка 1: некорректная строка потока/i);
 });

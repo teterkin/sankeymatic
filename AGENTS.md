@@ -1,64 +1,67 @@
-# Project notes for agents
+# Заметки для агентов
 
-## What this repository is
+## Что это за репозиторий
 
-An OpenCode skill. The repository root **is** the skill directory: `SKILL.md`
-sits next to `scripts/`, so cloning into `~/.config/opencode/skill/sankeymatic`
-installs it. There is no build step and no runtime dependency.
+Скилл для OpenCode. Корень репозитория **и есть** каталог скилла: `SKILL.md`
+лежит рядом с `scripts/`, поэтому клонирование в
+`~/.config/opencode/skill/sankeymatic` сразу устанавливает скилл. Сборки нет,
+зависимостей во время работы нет.
 
-## Commands
+## Команды
 
-| Purpose | Command |
+| Назначение | Команда |
 | --- | --- |
-| Tests | `node --test scripts/*.test.mjs` |
-| Validate a diagram source | `node scripts/validate.mjs <file>` |
-| Build a share link | `node scripts/link.mjs <file>` |
-| Local preview (network on first run) | `node scripts/local.mjs <file> --open` |
-| Verify the local asset cache | `node scripts/local.mjs --check` |
+| Тесты | `node --test scripts/*.test.mjs` |
+| Проверить исходник диаграммы | `node scripts/validate.mjs <файл>` |
+| Собрать ссылку | `node scripts/link.mjs <файл>` |
+| Локальный предпросмотр (сеть при первом запуске) | `node scripts/local.mjs <файл> --open` |
+| Проверить кэш ассетов | `node scripts/local.mjs --check` |
 
-Node 20+. All scripts use built-in modules only.
+Node 20+. Все скрипты используют только встроенные модули.
 
-## Conventions
+## Соглашения
 
-- Trunk is `main`. Branches: `feat/<slug>`, `fix/<slug>`, `docs/<slug>`,
+- Транк — `main`. Ветки: `feat/<slug>`, `fix/<slug>`, `docs/<slug>`,
   `chore/<slug>`.
-- Commit messages are imperative and scoped: `validate: reject zero amounts`.
-- Version lives in `VERSION` and in the top entry of `CHANGELOG.md`; a tag is
-  created only at release.
-- Docs change in the same commit as the behavior they describe.
+- Сообщения коммитов — в повелительном наклонении, с областью:
+  `validate: отклонять нулевые суммы`.
+- Версия живёт в `VERSION` и в верхней записи `CHANGELOG.md`; тег ставится
+  только на релизе.
+- Документация меняется в том же коммите, что и поведение, которое она
+  описывает.
 
-## Map
+## Карта
 
-- `SKILL.md` — the workflow the agent follows. Keep it under one screen of
-  scroll; details belong in `references/`.
-- `references/modeling.md` — text to balanced flow graph. This is the core of
-  the skill; changes here need a golden fixture.
-- `references/syntax.md`, `references/palettes.md` — SankeyMATIC grammar and
-  themes, verified against a pinned build.
-- `scripts/validate.mjs` — the single source of truth for syntax and settings.
-  The settings map mirrors `build/constants.js` of the pinned build.
-- `scripts/link.mjs` — `?i=` payload, exactly as the site builds it
+- `SKILL.md` — процесс, которому следует агент. Держите его в пределах одного
+  экрана; детали — в `references/`.
+- `references/modeling.md` — из текста в сбалансированный граф потоков. Это
+  ядро скилла; изменения здесь требуют golden-фикстуры.
+- `references/syntax.md`, `references/palettes.md` — грамматика SankeyMATIC и
+  темы, сверенные с закреплённой сборкой.
+- `scripts/validate.mjs` — единственный источник правды по синтаксису и
+  настройкам. Карта настроек повторяет `build/constants.js` закреплённой сборки.
+- `scripts/link.mjs` — payload `?i=`, ровно как его собирает сайт
   (`encodeURIComponent(...).replaceAll('-', '%2D')`).
-- `scripts/assets.mjs`, `scripts/local.mjs` — pinned asset cache and the
-  127.0.0.1 server. Hashes in `assets.mjs` must match the pinned files; local
-  mode must never keep a `cdn.jsdelivr` URL in the page.
-- `tests/fixtures/pl-1800.*` — the acceptance case: 10 flows, 11 nodes, 0
-  imbalances.
+- `scripts/assets.mjs`, `scripts/local.mjs` — кэш закреплённых ассетов и сервер
+  на 127.0.0.1. Хэши в `assets.mjs` должны совпадать с закреплёнными файлами;
+  локальный режим не должен оставлять в странице URL `cdn.jsdelivr`.
+- `tests/fixtures/pl-1800.*` — приёмочный кейс: 10 потоков, 11 узлов,
+  0 дисбалансов.
 
-## Invariants
+## Инварианты
 
-- Numbers are never invented: every amount exists in the user's text or comes
-  from an agreed calculation.
-- Every intermediate node balances (`in = out`); sources and sinks may be
-  one-sided.
-- No cycles, no self-flows, no zero or negative amounts.
-- `flow inheritfrom source` is always present; without it flows are grey.
-- Settings emitted by the skill are limited to the four answers, units, and the
-  two flow lines above.
+- Числа не выдумываются: каждая сумма есть в тексте пользователя или получена
+  из согласованного расчёта.
+- Каждый промежуточный узел сходится (`вход = выход`); источники и стоки могут
+  быть односторонними.
+- Никаких циклов, потоков узла в себя, нулевых и отрицательных сумм.
+- `flow inheritfrom source` присутствует всегда; без него потоки серые.
+- Настройки, которые пишет скилл, ограничены четырьмя ответами, единицами
+  измерения и двумя строками про потоки выше.
 
-## Secrets and data
+## Секреты и данные
 
-- No secrets in this repository, ever.
-- Diagram sources can contain real financial data. Do not add user data to
-  fixtures; `pl-1800` is synthetic.
-- A share link embeds its payload; treat it as public.
+- Секретов в репозитории нет и быть не должно.
+- Исходники диаграмм могут содержать реальные финансовые данные. Не добавляйте
+  пользовательские данные в фикстуры; `pl-1800` — синтетический пример.
+- Ссылка содержит свой payload; считайте её публичной.

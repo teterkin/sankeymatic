@@ -1,7 +1,7 @@
 # TODO
 
-- [ ] Publish `teterkin/sankeymatic` as a public repository with description and
-      topics.
-- [ ] Walk the install path as a user: clone by the README command, `/reload`,
-      run the P&L example end to end.
-- [ ] Tag `v0.1.0` after the install check passes.
+- [x] Опубликовать `teterkin/sankeymatic` как публичный репозиторий с описанием
+      и топиками.
+- [ ] Пройти путь установки как пользователь: клонировать по команде из README,
+      выполнить `/reload`, прогнать пример P&L целиком.
+- [ ] Поставить тег `v0.1.0` после успешной проверки установки.

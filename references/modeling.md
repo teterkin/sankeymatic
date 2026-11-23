@@ -1,68 +1,70 @@
-# From text to a flow graph
+# Из текста в граф потоков
 
-The diagram is correct when every number in it can be found in the user's text
-(or is an explicitly agreed calculation), and every intermediate node balances.
+Диаграмма корректна, когда каждое число в ней есть в тексте пользователя (или
+является явно согласованным расчётом), а каждый промежуточный узел сходится.
 
-## 1. Extract the pairs
+## 1. Извлеките пары
 
-Walk the text and collect `(source, target, amount)` triples. Amounts stay
-untouched: no unit conversion, no rounding beyond what the text already has,
-no thousands separators.
+Пройдите по тексту и соберите тройки `(источник, цель, сумма)`. Суммы не
+трогайте: без пересчёта единиц, без округления сверх того, что уже есть в
+тексте, без разделителей тысяч.
 
-- "A brings 900 of the total" with a total → `A [900] Total`
-- "the total is split into 800 and 1000" → `Total [800] Cost`, `Total [1000] Profit`
-- "after subtracting 640 and 10, 350 remains" → `Profit [640] Overhead`,
+- «A приносит 900 из общей суммы» → `A [900] Total`
+- «итог делится на 800 и 1000» → `Total [800] Cost`, `Total [1000] Profit`
+- «после вычета 640 и 10 остаётся 350» → `Profit [640] Overhead`,
   `Profit [10] Depreciation`, `Profit [350] Operating`
 
-If a sentence gives a difference instead of a flow ("260 remains"), use the
-difference only when the other parts are known and add up exactly.
+Если в предложении дана разница («остаётся 260»), используйте её только тогда,
+когда остальные части известны и сходятся точно.
 
-## 2. Find the stages
+## 2. Найдите стадии
 
-Draw the graph before writing lines:
+Нарисуйте граф до того, как писать строки:
 
-- **Sources** have outgoing flows only (departments, income, inputs).
-- **Sinks** have incoming flows only (costs, taxes, savings).
-- **Intermediate nodes** have both, and must satisfy `in = out`.
+- **Источники** имеют только исходящие потоки (подразделения, доходы, входы).
+- **Стоки** имеют только входящие потоки (затраты, налоги, накопления).
+- **Промежуточные узлы** имеют и то и другое и обязаны удовлетворять
+  `вход = выход`.
 
-Typical finance shape: `A, B, C → Revenue → {Cost of Sales, Gross Profit}`,
+Типичная финансовая форма: `A, B, C → Revenue → {Cost of Sales, Gross Profit}`,
 `Gross Profit → {SG&A, Amortization, Operating Profit}`,
 `Operating Profit → {Tax, Net Profit}`.
 
-## 3. Check the totals
+## 3. Сверьте итоги
 
-When the text states a total:
+Когда в тексте назван итог:
 
-1. Sum the stated parts.
-2. If the sum differs from the total, the text is ambiguous. Ask which number
-   wins; do not silently insert a balancing flow.
-3. If the difference comes from rounding (for example percentages that add up
-   to 99.9%), ask whether to keep the stated amounts or the stated total.
+1. Сложите названные части.
+2. Если сумма расходится с итогом, текст неоднозначен. Спросите, какое число
+   главное; не вставляйте молча балансирующий поток.
+3. Если расхождение от округления (например, проценты дают 99,9%), спросите,
+   что оставить: названные суммы или названный итог.
 
-Percentages are never a source of amounts on their own. Compute a percentage
-only from a total that the text provides, and keep the result to two decimals
-at most.
+Проценты сами по себе не источник сумм. Считайте процент только от итога,
+который есть в тексте, и оставляйте не больше двух знаков после запятой.
 
-## 4. Reject invalid shapes
+## 4. Отбрасывайте недопустимые формы
 
-- **Cycles** and **self-flows** are not supported. Restructure only with the
-  user's agreement.
-- **Zero** and **negative** amounts are not supported. Represent a negative
-  value as a positive flow in the opposite direction with a clear label.
-- **Duplicate** `source → target` pairs are merged into one line.
+- **Циклы** и **потоки узла в себя** не поддерживаются. Перестраивайте только с
+  согласия пользователя.
+- **Нулевые** и **отрицательные** суммы не поддерживаются. Отрицательную
+  величину показывайте положительным потоком в обратную сторону с понятной
+  подписью.
+- **Дубликаты** пар `источник → цель` объединяйте в одну строку.
 
-## 5. Name and order
+## 5. Названия и порядок
 
-- Keep the user's terms, including mixed languages if they used them.
-- Node names are case sensitive: `Revenue` and `revenue` are different nodes.
-- Use `\n` for a line break inside a label.
-- Put stage-0 nodes first in the source text: SankeyMATIC assigns theme colors
-  in order of first appearance, and the first colors should go to the roots.
+- Сохраняйте термины пользователя, включая смешение языков, если он так писал.
+- Регистр важен: `Revenue` и `revenue` — разные узлы.
+- Для переноса строки внутри подписи используйте `\n`.
+- Узлы первой стадии ставьте первыми в исходнике: SankeyMATIC назначает цвета
+  темы в порядке первого появления, и первые цвета должны достаться корням.
 
-## 6. Worked example
+## 6. Разобранный пример
 
-Text: revenue 1800 from A 900, B 750, C 150; 800 cost of sales and 1000 gross
-profit; 640 SG&A, 10 amortization, 350 operating profit; 90 tax, 260 net profit.
+Текст: выручка 1800 из A 900, B 750, C 150; себестоимость 800 и валовая
+прибыль 1000; SG&A 640, амортизация 10, операционная прибыль 350; налоги 90,
+чистая прибыль 260.
 
 ```
 A [900] Revenue
@@ -77,14 +79,15 @@ Operating Profit [90] Tax
 Operating Profit [260] Net Profit
 ```
 
-Check: Revenue 1800/1800, Gross Profit 1000/1000, Operating Profit 350/350;
-sources and sinks are one-sided. Validator: 11 nodes, 10 flows, 0 imbalances.
+Проверка: Revenue 1800/1800, Gross Profit 1000/1000, Operating Profit 350/350;
+источники и стоки односторонние. Валидатор: 11 узлов, 10 потоков,
+0 дисбалансов.
 
-## Checklist
+## Чек-лист
 
-- [ ] Every amount appears in the text or in an agreed calculation.
-- [ ] Every intermediate node balances.
-- [ ] No cycles, no self-flows, no zero or negative amounts.
-- [ ] Duplicate pairs merged.
-- [ ] Stage-0 nodes listed first.
-- [ ] `node scripts/validate.mjs <file>` exits 0.
+- [ ] Каждая сумма есть в тексте или в согласованном расчёте.
+- [ ] Каждый промежуточный узел сходится.
+- [ ] Нет циклов, потоков узла в себя, нулевых и отрицательных сумм.
+- [ ] Дубликаты пар объединены.
+- [ ] Узлы первой стадии перечислены первыми.
+- [ ] `node scripts/validate.mjs <файл>` завершается с кодом 0.

@@ -31,7 +31,7 @@ const BALANCES = [
   ['Net Profit', 260, 0],
 ];
 
-test('the financial fixture is a clean, balanced P&L', () => {
+test('финансовая фикстура — чистый сбалансированный P&L', () => {
   const report = validate(source);
   assert.deepEqual(report.errors, []);
   assert.deepEqual(report.warnings, []);
@@ -44,7 +44,7 @@ test('the financial fixture is a clean, balanced P&L', () => {
   }
 });
 
-test('the financial fixture carries the agreed settings', () => {
+test('финансовая фикстура содержит согласованные настройки', () => {
   const lines = source.split('\n').map((line) => line.trim());
   for (const setting of SETTINGS) {
     assert.ok(lines.includes(setting), setting);

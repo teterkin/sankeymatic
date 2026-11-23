@@ -1,15 +1,19 @@
-Third-party notices
-===================
+Уведомления о третьих сторонах
+==============================
 
-This project generates input for SankeyMATIC and, in its optional local mode,
-downloads and serves an unmodified copy of the SankeyMATIC build. The files
-below are not part of this repository except for scripts/vendor/lz-string.min.js.
+Проект готовит исходные данные для SankeyMATIC и в необязательном локальном
+режиме скачивает и отдаёт немодифицированную копию сборки SankeyMATIC. В
+репозитории лежит только `scripts/vendor/lz-string.min.js`; остальные файлы
+скачиваются во время работы.
+
+Тексты лицензий ниже приведены дословно на английском, как требуют сами
+лицензии.
 
 
 SankeyMATIC
 -----------
 https://github.com/nowthis/sankeymatic
-Pinned build: a6d8053e766c45336ec3a0b7fb778d71eef8245c (2026-07-13)
+Закреплённая сборка: a6d8053e766c45336ec3a0b7fb778d71eef8245c (2026-07-13)
 
 Copyright (c) 2014-2024, Steve Bogart, <sbogart@sankeymatic.com>
 
@@ -27,15 +31,14 @@ WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-SankeyMATIC is a trademark of its author. This project is not affiliated
-with or endorsed by SankeyMATIC. Local copies keep the "Made at
-SankeyMATIC.com" attribution enabled.
+SankeyMATIC — товарный знак автора. Этот проект не связан с SankeyMATIC и не
+одобрен им. Локальные копии сохраняют атрибуцию «Made at SankeyMATIC.com».
 
 
 d3
 --
 https://github.com/d3/d3
-Version pinned by the local-mode fetcher: 7.9.2
+Версия, которую скачивает локальный режим: 7.9.2
 
 Copyright 2010-2026 Mike Bostock
 
@@ -55,7 +58,7 @@ THIS SOFTWARE.
 canvg
 -----
 https://github.com/canvg/canvg
-Version pinned by the local-mode fetcher: 3.0.11
+Версия, которую скачивает локальный режим: 3.0.11
 
 The MIT License (MIT)
 
@@ -83,8 +86,8 @@ SOFTWARE.
 lz-string
 ---------
 https://github.com/pieroxy/lz-string
-Vendored file: sankeymatic/scripts/vendor/lz-string.min.js
-Taken from the pinned SankeyMATIC build above.
+Вендоренный файл: scripts/vendor/lz-string.min.js
+Взят из закреплённой сборки SankeyMATIC выше.
 
 MIT License
 

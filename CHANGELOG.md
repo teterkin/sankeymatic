@@ -1,24 +1,27 @@
-# Changelog
+# История изменений
 
-All notable changes to this project are documented here. The format follows
-[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
+Все заметные изменения проекта описаны здесь. Формат —
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), версии —
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.1.0] - 2026-11-23
 
-### Added
+### Добавлено
 
-- OpenCode skill that turns text into SankeyMATIC source: four setup questions
-  with defaults (label size 18, node height 20, node spacing 30, theme
-  Categories), optional units question, and the modelling rules for balanced
-  flows.
-- `scripts/validate.mjs`: syntax, settings whitelist, non-positive amounts,
-  cycles, self-flows and imbalance warnings. Exit 0/1, `--strict`, `--json`.
-- `scripts/link.mjs`: `?i=` share links with the same encoding the site uses.
-- `scripts/local.mjs` and `scripts/assets.mjs`: pinned, checksum-verified local
-  preview on `127.0.0.1`, no CDN left in the page.
-- Golden fixture `tests/fixtures/pl-1800.*`: 10 flows, 11 nodes, 0 imbalances.
-- Documentation: README, modelling/syntax/palette references, AGENTS.md, NOTICE
-  with ISC/MIT attributions.
+- Скилл для OpenCode, превращающий текст в исходник SankeyMATIC: четыре вопроса
+  с дефолтами (размер меток 18, высота узлов 20, расстояние 30, тема Categories),
+  необязательный вопрос про единицы измерения и правила моделирования
+  сбалансированных потоков.
+- `scripts/validate.mjs`: синтаксис, список допустимых настроек, неположительные
+  суммы, циклы, потоки узла в себя и предупреждения о дисбалансе. Коды выхода
+  0/1, флаги `--strict`, `--json`.
+- `scripts/link.mjs`: ссылки `?i=` с той же кодировкой, что использует сайт.
+- `scripts/local.mjs` и `scripts/assets.mjs`: локальный предпросмотр на
+  `127.0.0.1` с закреплёнными файлами и проверкой контрольных сумм; в странице
+  не остаётся CDN.
+- Golden-фикстура `tests/fixtures/pl-1800.*`: 10 потоков, 11 узлов,
+  0 дисбалансов.
+- Документация: README, справочники по моделированию, синтаксису и палитрам,
+  AGENTS.md, NOTICE с атрибуцией ISC/MIT.
 
 [0.1.0]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.0

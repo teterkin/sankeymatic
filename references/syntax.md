@@ -1,79 +1,81 @@
-# SankeyMATIC syntax
+# Синтаксис SankeyMATIC
 
-Source: the official manual (https://sankeymatic.com/manual/syntax.html,
-https://sankeymatic.com/manual/colors.html) and the pinned build
-`nowthis/sankeymatic@a6d8053` (`build/constants.js`), checked 2026-11-23.
+Источник: официальное руководство
+(https://sankeymatic.com/manual/syntax.html,
+https://sankeymatic.com/manual/colors.html) и закреплённая сборка
+`nowthis/sankeymatic@a6d8053` (`build/constants.js`), проверено 2026-11-23.
 
-## Line types
-
-```
-// comment                     any line starting with // or '
-                              blank lines are ignored
-Source [123.45] Target        a flow
-Source [*] Target             consume whatever the source has left
-Source [?] Target             provide whatever the target is missing
-:Node #3cf                    node color
-:Node #3cf >>                 also paint flows FROM the node
-:Node #3cf <<                 also paint flows TO the node
-labelname size 18             a setting
-```
-
-A flow may carry its own color and opacity:
+## Типы строк
 
 ```
-A [8] C #00CC00       flow color
-A [8] C #00CC00.9     flow color with opacity
+// комментарий                любая строка, начинающаяся с // или '
+                              пустые строки игнорируются
+Source [123.45] Target        поток
+Source [*] Target             забрать у источника всё, что осталось
+Source [?] Target             додать цели всё, чего ей не хватает
+:Node #3cf                    цвет узла
+:Node #3cf >>                 красить ещё и потоки ИЗ узла
+:Node #3cf <<                 красить ещё и потоки В узел
+labelname size 18             настройка
 ```
 
-Amounts are positive numbers without separators or units. Node names may
-contain spaces and emoji; names are case sensitive. `\n` breaks a label.
+У потока может быть свой цвет и прозрачность:
 
-## Settings used by this skill
+```
+A [8] C #00CC00       цвет потока
+A [8] C #00CC00.9     цвет потока с прозрачностью
+```
 
-| Line | Values | Meaning |
+Суммы — положительные числа без разделителей и единиц. В названиях узлов могут
+быть пробелы и эмодзи; регистр важен. `\n` переносит строку в подписи.
+
+## Настройки, которые использует скилл
+
+| Строка | Значения | Смысл |
 | --- | --- | --- |
-| `labelname size 18` | half step, min 6 | base label size in px |
-| `node h 20` | 0–100, half steps | Nodes → Height slider |
-| `node spacing 30` | 0–100, half steps | Nodes → Spacing slider |
-| `node theme b` | `a`, `b`, `c`, `d`, `none` | node color theme |
-| `flow inheritfrom source` | `source`, `target`, `outside-in`, `none` | flow color source |
-| `flow opacity 0.45` | 0–1 | default flow opacity |
-| `value prefix '$'` | quoted text | unit before the amount |
-| `value suffix ' у.е.'` | quoted text | unit after the amount |
+| `labelname size 18` | половина шага, минимум 6 | базовый размер меток в px |
+| `node h 20` | 0–100, шаг 0.5 | ползунок Nodes → Height |
+| `node spacing 30` | 0–100, шаг 0.5 | ползунок Nodes → Spacing |
+| `node theme b` | `a`, `b`, `c`, `d`, `none` | тема цветов узлов |
+| `flow inheritfrom source` | `source`, `target`, `outside-in`, `none` | откуда брать цвет потока |
+| `flow opacity 0.45` | 0–1 | прозрачность потоков по умолчанию |
+| `value prefix '$'` | текст в кавычках | единица перед суммой |
+| `value suffix ' у.е.'` | текст в кавычках | единица после суммы |
 
-Settings may appear anywhere in the file. The site applies each valid line and
-turns it into a `// ✓` comment; a saved file keeps them, a pasted block works
-the same way.
+Настройки могут стоять в любом месте файла. Сайт применяет каждую корректную
+строку и превращает её в комментарий `// ✓`; сохранённый файл хранит их, а
+вставленный блок работает так же.
 
-`scripts/validate.mjs` carries the full settings map from the pinned build and
-checks types, ranges and allowed values. Do not invent setting names: an
-unknown key is an error.
+`scripts/validate.mjs` содержит полную карту настроек из закреплённой сборки и
+проверяет типы, диапазоны и допустимые значения. Не придумывайте имена
+настроек: неизвестный ключ — ошибка.
 
-## Colors
+## Цвета
 
-- `#rgb` or `#rrggbb`, with an optional `.opacity` suffix (`.0`–`.9999`).
-- Node color precedence: explicit `:Node` line, then the theme.
-- Flow color precedence: flow line color, then source inheritance, then target
-  inheritance, then the default flow color.
-- `flow inheritfrom source` with the default `0.45` opacity is what makes flows
-  look like a lighter version of their source node.
+- `#rgb` или `#rrggbb`, с необязательным суффиксом прозрачности `.opacity`
+  (`.0`–`.9999`).
+- Приоритет цвета узла: явная строка `:Узел`, затем тема.
+- Приоритет цвета потока: цвет в строке потока, затем наследование от
+  источника, затем от цели, затем цвет по умолчанию.
+- `flow inheritfrom source` при прозрачности по умолчанию `0.45` — это и есть
+  тот вид, когда поток кажется более светлой версией цвета своего источника.
 
-## Theme letters
+## Буквы тем
 
-| Letter | Theme | Colors |
+| Буква | Тема | Цветов |
 | --- | --- | --- |
 | `a` | Categories | 10 |
 | `b` | Tableau10 | 10 |
 | `c` | Dark | 8 |
 | `d` | Varied | 12 |
 
-See `palettes.md` for the hex values. Colors are assigned in the order nodes
-first appear in the source.
+Hex-значения — в `palettes.md`. Цвета назначаются в порядке первого появления
+узлов в исходнике.
 
-## Not supported
+## Что не поддерживается
 
-- cycles and self-flows;
-- zero or negative amounts;
-- amounts with thousands separators or unit symbols.
+- циклы и потоки узла в себя;
+- нулевые и отрицательные суммы;
+- суммы с разделителями тысяч и знаками единиц.
 
-The validator rejects all three.
+Валидатор отклоняет все три случая.

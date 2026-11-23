@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { resolveAsset, staticHandler } from './local.mjs';
 
-test('serves index.html for / and 404 for missing files', async () => {
+test('отдаёт index.html на / и 404 на отсутствующий файл', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'skm-'));
   writeFileSync(join(dir, 'index.html'), '<h1>ok</h1>');
   const server = createServer(staticHandler(dir));
@@ -25,7 +25,7 @@ test('serves index.html for / and 404 for missing files', async () => {
   }
 });
 
-test('refuses paths outside the asset directory', () => {
+test('не отдаёт файлы за пределами каталога ассетов', () => {
   assert.equal(
     resolveAsset('/tmp/assets', '/..%2f..%2fetc%2fpasswd'),
     null

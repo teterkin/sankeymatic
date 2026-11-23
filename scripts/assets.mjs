@@ -59,10 +59,10 @@ const CANVG_TAG =
 
 export function patchHtml(html) {
   if (!D3_TAG.test(html)) {
-    throw new Error('cannot patch d3: upstream script tag not found');
+    throw new Error('не удалось заменить d3: не найдена строка скрипта в исходной странице');
   }
   if (!CANVG_TAG.test(html)) {
-    throw new Error('cannot patch canvg: upstream script tag not found');
+    throw new Error('не удалось заменить canvg: не найдена строка скрипта в исходной странице');
   }
   return html
     .replace(D3_TAG, '<script defer src="d3.min.js"></script>')
@@ -88,16 +88,16 @@ export async function ensureAssets({ fetchImpl = fetch, log = () => {} } = {}) {
       continue;
     }
 
-    log(`downloading ${name}`);
+    log(`скачиваю ${name}`);
     const response = await fetchImpl(asset.url);
     if (!response.ok) {
-      throw new Error(`download failed for ${name}: HTTP ${response.status}`);
+      throw new Error(`не удалось скачать ${name}: HTTP ${response.status}`);
     }
     const body = Buffer.from(await response.arrayBuffer());
     const digest = sha256(body);
     if (digest !== asset.sha256) {
       throw new Error(
-        `checksum mismatch for ${name}: expected ${asset.sha256}, got ${digest}`
+        `несовпадение контрольной суммы для ${name}: ожидалось ${asset.sha256}, получено ${digest}`
       );
     }
     mkdirSync(dirname(target), { recursive: true });

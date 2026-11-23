@@ -153,7 +153,7 @@ export function validate(text) {
     if (match) {
       const [, source, amount, target] = match;
       if (amount !== '*' && amount !== '?' && Number(amount) <= 0) {
-        errors.push({ line: index + 1, message: 'amount must be greater than zero' });
+        errors.push({ line: index + 1, message: 'сумма должна быть больше нуля' });
         return;
       }
       for (const name of [source, target]) {
@@ -177,7 +177,7 @@ export function validate(text) {
 
     if (line.startsWith(':')) {
       if (!NODE_RE.test(line)) {
-        errors.push({ line: index + 1, message: 'malformed node declaration' });
+        errors.push({ line: index + 1, message: 'некорректное объявление узла' });
       }
       return;
     }
@@ -185,7 +185,7 @@ export function validate(text) {
     const setting = parseSetting(line);
     if (!setting) {
       if (line.includes('[') || line.includes(']')) {
-        errors.push({ line: index + 1, message: 'malformed flow line' });
+        errors.push({ line: index + 1, message: 'некорректная строка потока' });
       }
       return;
     }
@@ -195,8 +195,8 @@ export function validate(text) {
       errors.push({
         line: index + 1,
         message: looksLikeFlow
-          ? 'malformed flow line'
-          : `unknown setting "${setting.name}"`,
+          ? 'некорректная строка потока'
+          : `неизвестная настройка "${setting.name}"`,
       });
       return;
     }
@@ -204,7 +204,7 @@ export function validate(text) {
     if (!settingIsValid(SETTINGS.get(setting.key), setting.value)) {
       errors.push({
         line: index + 1,
-        message: `invalid value for ${setting.key}: "${setting.value}"`,
+        message: `недопустимое значение для ${setting.key}: "${setting.value}"`,
       });
     }
   });
@@ -226,14 +226,14 @@ export function validate(text) {
       if (edge.target === name) {
         errors.push({
           line: edge.line,
-          message: `cycle: "${name}" -> "${name}"`,
+          message: `цикл: "${name}" -> "${name}"`,
         });
       } else if (state.get(edge.target) === 1) {
         const start = stack.indexOf(edge.target);
         const path = [...stack.slice(start), edge.target]
           .map((node) => `"${node}"`)
           .join(' -> ');
-        errors.push({ line: edge.line, message: `cycle: ${path}` });
+        errors.push({ line: edge.line, message: `цикл: ${path}` });
       } else if (!state.has(edge.target)) {
         visit(edge.target);
       }
@@ -257,7 +257,7 @@ export function validate(text) {
       imbalances += 1;
       warnings.push({
         line: sums.line,
-        message: `node "${name}": in ${sums.in}, out ${sums.out} (difference ${difference})`,
+        message: `узел "${name}": вход ${sums.in}, выход ${sums.out} (разница ${difference})`,
       });
     }
   }
@@ -274,16 +274,33 @@ export function validate(text) {
   };
 }
 
+function plural(count, one, few, many) {
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  if (mod100 >= 11 && mod100 <= 14) {
+    return many;
+  }
+  if (mod10 === 1) {
+    return one;
+  }
+  if (mod10 >= 2 && mod10 <= 4) {
+    return few;
+  }
+  return many;
+}
+
 export function summarize(report, file) {
   const { nodes, flows, imbalances } = report.stats;
-  return `${file}: ${nodes} nodes, ${flows} flows, ${imbalances} imbalances`;
+  return `${file}: ${nodes} ${plural(nodes, 'узел', 'узла', 'узлов')}, `
+    + `${flows} ${plural(flows, 'поток', 'потока', 'потоков')}, `
+    + `${imbalances} ${plural(imbalances, 'дисбаланс', 'дисбаланса', 'дисбалансов')}`;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const args = process.argv.slice(2);
   const file = args.find((arg) => !arg.startsWith('--'));
   if (!file) {
-    console.error('usage: node validate.mjs <file> [--strict] [--json]');
+    console.error('использование: node validate.mjs <файл> [--strict] [--json]');
     process.exit(2);
   }
   const report = validate(readFileSync(file, 'utf8'));
@@ -292,10 +309,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   } else {
     console.log(summarize(report, file));
     for (const error of report.errors) {
-      console.log(`ERROR line ${error.line}: ${error.message}`);
+      console.log(`ОШИБКА строка ${error.line}: ${error.message}`);
     }
     for (const warning of report.warnings) {
-      console.log(`WARN  line ${warning.line}: ${warning.message}`);
+      console.log(`ПРЕДУПРЕЖДЕНИЕ строка ${warning.line}: ${warning.message}`);
     }
   }
   const failed = report.errors.length > 0

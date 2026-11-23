@@ -1,98 +1,96 @@
-# SankeyMATIC diagram — OpenCode skill
+# Диаграмма SankeyMATIC — скилл для OpenCode
 
-Turn a text, a table or a prose description into a valid
-[SankeyMATIC](https://sankeymatic.com/build/) diagram: the agent asks four setup
-questions with defaults, builds the flows, checks that every intermediate node
-balances, validates the syntax, and gives you a `.txt` source plus a link that
-opens the finished diagram.
+Превращает текст, таблицу или описание словами в корректную диаграмму
+[SankeyMATIC](https://sankeymatic.com/build/): агент задаёт четыре вопроса с
+готовыми вариантами, строит потоки, проверяет, что каждый промежуточный узел
+сходится, валидирует синтаксис и отдаёт `.txt` плюс ссылку, которая сразу
+открывает готовую диаграмму.
 
-## What you get
+## Что вы получите
 
-- four questions, each with a default: label size 18, node height 20, node
-  spacing 30, theme Categories (alternatives: Tableau10, Dark, Varied);
-- one extra question about units, only when the text does not make them clear;
-- a validated `<slug>.txt` that loads through **Load from file**;
-- a share link that opens the diagram with all settings applied;
-- optional local preview served from `127.0.0.1`, no public link.
+- четыре вопроса, у каждого есть значение по умолчанию: размер меток 18, высота
+  узлов 20, расстояние между узлами 30, тема Categories (варианты: Tableau10,
+  Dark, Varied);
+- один дополнительный вопрос про единицы измерения, только если из текста они не
+  ясны;
+- проверенный `<slug>.txt`, который загружается через **Load from file**;
+- ссылку, которая открывает диаграмму со всеми настройками;
+- по желанию — локальный предпросмотр на `127.0.0.1`, без публичной ссылки.
 
-## Requirements
+## Требования
 
 - OpenCode 2.x.
-- Node.js 20 or newer for the helper scripts. No npm dependencies.
-- Internet for the share link and for the first run of the local preview.
+- Node.js 20 или новее для вспомогательных скриптов. Зависимостей npm нет.
+- Интернет для ссылки и для первого запуска локального предпросмотра.
 
-## Install
+## Установка
 
-Give your agent a single line:
+Дайте агенту одну строку:
 
 > Установи скилл отсюда: https://github.com/teterkin/sankeymatic
 
-or, in English:
-
-> Install this skill from https://github.com/teterkin/sankeymatic
-
-What it means:
+Что это значит:
 
 ```sh
 git clone https://github.com/teterkin/sankeymatic.git \
   ~/.config/opencode/skill/sankeymatic
 ```
 
-The directory name is the skill ID, so keep it `sankeymatic`. If your OpenCode
-discovers `~/.config/opencode/skills` (plural) instead, clone there. Then run
-`/reload`; the skill shows up in the available skills list.
+Имя каталога — это ID скилла, поэтому оставьте `sankeymatic`. Если ваш OpenCode
+ищет скиллы в `~/.config/opencode/skills` (множественное число), клонируйте
+туда. Затем выполните `/reload` — скилл появится в списке доступных.
 
-Update and uninstall:
+Обновление и удаление:
 
 ```sh
 git -C ~/.config/opencode/skill/sankeymatic pull --ff-only
 rm -rf ~/.config/opencode/skill/sankeymatic
 ```
 
-## Use
+## Использование
 
-Ask in plain language and paste the data:
+Спросите обычными словами и вставьте данные:
 
 > Сделай диаграмму Sankey: выручка 1800, из них подразделение A — 900,
 > B — 750, C — 150; себестоимость 800, валовая прибыль 1000; SG&A 640,
 > амортизация 10, операционная прибыль 350; налоги 90, чистая прибыль 260.
 
-The agent answers with the four questions, then returns the source, the link and
-the same text in a fenced block for pasting into the Inputs field.
+Агент задаст четыре вопроса, затем вернёт исходник, ссылку и тот же текст в
+блоке кода для вставки в поле Inputs.
 
-A complete example lives in
+Полный пример лежит в
 [`tests/fixtures/pl-1800.expected.txt`](tests/fixtures/pl-1800.expected.txt),
-with the original text in
+исходный текст — в
 [`tests/fixtures/pl-1800.md`](tests/fixtures/pl-1800.md).
 
-## Local preview
+## Локальный предпросмотр
 
 ```sh
-node scripts/local.mjs path/to/diagram.txt --open
+node scripts/local.mjs путь/к/диаграмме.txt --open
 ```
 
-The script downloads a pinned copy of the SankeyMATIC build (about 750 KB,
-checksums verified) into `~/.cache/sankeymatic-skill/<pin>/`, rewrites the two
-CDN script tags to local files, serves the directory on `127.0.0.1` and prints
-the URL. Later runs work offline. `node scripts/local.mjs --check` verifies the
-cache without starting a server.
+Скрипт скачивает закреплённую копию сборки SankeyMATIC (около 750 КБ, с
+проверкой контрольных сумм) в `~/.cache/sankeymatic-skill/<пин>/`, заменяет два
+CDN-тега на локальные файлы, поднимает сервер на `127.0.0.1` и печатает URL.
+Дальше всё работает офлайн. `node scripts/local.mjs --check` проверяет кэш без
+запуска сервера.
 
-## Privacy
+## Приватность
 
-- Nothing is uploaded. The share link carries the diagram in its `?i=` payload;
-  anyone who has the URL can read it.
-- The local preview never talks to sankeymatic.com: only the pinned assets are
-  downloaded on the first run, and the diagram itself stays in the URL.
-- Use `--local` for financial or otherwise private data.
+- Ничего не загружается на сервер. Ссылка несёт диаграмму в payload `?i=`;
+  любой, у кого есть URL, её увидит.
+- Локальный предпросмотр не обращается к sankeymatic.com: при первом запуске
+  скачиваются только закреплённые файлы, а сама диаграмма остаётся в URL.
+- Для финансовых и других приватных данных используйте `--local`.
 
-## Limits
+## Ограничения
 
-- No local rendering: PNG and SVG are exported from the opened diagram page.
-- SankeyMATIC rejects cycles, self-flows, zero and negative amounts; so does the
-  validator.
-- The link needs internet; the local preview needs Node and a browser.
+- Локального рендеринга нет: PNG и SVG экспортируются со страницы диаграммы.
+- SankeyMATIC не принимает циклы, потоки узла в себя, нулевые и отрицательные
+  суммы; валидатор тоже.
+- Ссылке нужен интернет, локальному предпросмотру — Node и браузер.
 
-## Checks
+## Проверки
 
 ```sh
 node --test scripts/*.test.mjs
@@ -100,19 +98,20 @@ node scripts/validate.mjs tests/fixtures/pl-1800.expected.txt
 node scripts/local.mjs --check
 ```
 
-## Project layout
+## Структура проекта
 
 ```
-SKILL.md                 the instruction the agent loads
-references/              modelling, syntax and palette references
-scripts/                 validator, link builder, local preview, tests
-tests/fixtures/          the P&L example and its golden output
-docs/prd/                the confirmed PRD
-NOTICE                   third-party licenses and attribution
+SKILL.md                 инструкция, которую загружает агент
+references/              моделирование, синтаксис и палитры
+scripts/                 валидатор, сборка ссылки, локальный предпросмотр, тесты
+tests/fixtures/          пример P&L и эталонный вывод
+docs/prd/                подтверждённый PRD
+NOTICE                   лицензии и атрибуция третьих сторон
 ```
 
-## License
+## Лицензия
 
-MIT for this skill, see [LICENSE](LICENSE). Third-party components (SankeyMATIC,
-d3, canvg, lz-string) are covered by [NOTICE](NOTICE). This project is not
-affiliated with or endorsed by SankeyMATIC.
+Сам скилл — MIT, см. [LICENSE](LICENSE). Текст лицензии оставлен на английском
+дословно, как требует MIT. Третьи стороны (SankeyMATIC, d3, canvg, lz-string)
+описаны в [NOTICE](NOTICE). Проект не связан с SankeyMATIC и не одобрен её
+автором.

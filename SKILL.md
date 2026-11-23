@@ -1,83 +1,87 @@
 ---
-name: SankeyMATIC diagram
-description: Turn pasted text, tables, CSV or a prose description into valid SankeyMATIC source and a ready-to-open diagram. Asks four setup questions with defaults (label size 18, node height 20, node spacing 30, theme Categories/Tableau10/Dark/Varied), validates amounts, balances and cycles, then returns a .txt file, a share link and a local preview. Trigger words - SankeyMATIC, sankey, Sankey diagram, flow diagram, диаграмма Sankey, диаграмма потоков, схема потоков.
+name: Диаграмма SankeyMATIC
+description: Превращает вставленный текст, таблицу, CSV или описание в корректный исходник SankeyMATIC и готовую диаграмму. Задаёт четыре вопроса со значениями по умолчанию (размер меток 18, высота узлов 20, расстояние между узлами 30, тема Categories/Tableau10/Dark/Varied), проверяет суммы, балансы и циклы, затем отдаёт .txt, ссылку на готовую диаграмму и локальный предпросмотр. Триггеры - SankeyMATIC, sankey, диаграмма Sankey, диаграмма потоков, схема потоков.
 ---
 
-# SankeyMATIC diagram
+# Диаграмма SankeyMATIC
 
-Convert the user's data into a SankeyMATIC source file that loads without
-warnings, then give them a link that opens the finished diagram.
+Превращает данные пользователя в исходник SankeyMATIC, который открывается без
+предупреждений, и даёт ссылку на готовую диаграмму.
 
-This is a simplified workflow: four questions with defaults, automatic colors
-from a SankeyMATIC theme, automatic validation. Do not ask anything else unless
-the data is genuinely ambiguous.
+Это упрощённый режим: четыре вопроса с готовыми вариантами, автоматические
+цвета из темы SankeyMATIC, автоматическая проверка. Не спрашивайте ничего
+сверх этого, если данные действительно неоднозначны.
 
-## 1. Read the data
+## 1. Прочитайте данные
 
-Accept whatever the user provides: a pasted table, CSV, a list of amounts, a
-prose description, or a path to a file.
+Принимайте то, что дал пользователь: вставленную таблицу, CSV, список сумм,
+описание словами или путь к файлу.
 
-- If the input is already SankeyMATIC lines (`Source [amount] Target`), keep
-  them as they are and only add settings and ordering.
-- If the input is prose, extract the nodes, the amounts, and the direction of
-  each flow. Read `references/modeling.md` for the procedure.
-- If a total and its parts disagree, or a number is missing, ask one question
-  and stop. Never invent, adjust, or silently drop numbers.
+- Если на входе уже строки SankeyMATIC (`Source [amount] Target`), сохраните их
+  и добавьте только настройки и порядок.
+- Если на входе текст, выделите узлы, суммы и направление каждого потока.
+  Порядок работы описан в `references/modeling.md`.
+- Если итог и части не сходятся или числа не хватает, задайте один вопрос и
+  остановитесь. Никогда не выдумывайте, не подгоняйте и не выбрасывайте числа
+  молча.
 
-## 2. Ask the four questions
+## 2. Задайте четыре вопроса
 
-Ask all four in one batch, in the language of the conversation, each with the
-default first and marked as the default. Use the `question` tool when it is
-available. If the user says "defaults", "you choose", or similar, apply them
-without asking again.
+Задайте все четыре одним блоком, на языке разговора, в каждом варианте первым
+идёт значение по умолчанию с пометкой. Используйте инструмент `question`, если
+он доступен. Если пользователь говорит «по умолчанию», «на твой вкус» и тому
+подобное, примените дефолты без повторного вопроса.
 
-| Question | Default | Alternatives | Setting |
+| Вопрос | По умолчанию | Варианты | Настройка |
 | --- | --- | --- | --- |
-| Base label size | 18 | 16 (SankeyMATIC default), 20, 24 | `labelname size` |
-| Node height | 20 | 35, 50 (SankeyMATIC default), 75 | `node h` |
-| Node spacing | 30 | 50, 75, 90 | `node spacing` |
-| Color theme | Categories | Tableau10, Dark, Varied | `node theme` |
+| Базовый размер меток | 18 | 16 (как в SankeyMATIC), 20, 24 | `labelname size` |
+| Высота узлов | 20 | 35, 50 (как в SankeyMATIC), 75 | `node h` |
+| Расстояние между узлами | 30 | 50, 75, 90 | `node spacing` |
+| Цветовая гамма | Categories | Tableau10, Dark, Varied | `node theme` |
 
-Themes are letters: Categories `a`, Tableau10 `b`, Dark `c`, Varied `d`.
+Темы задаются буквами: Categories — `a`, Tableau10 — `b`, Dark — `c`,
+Varied — `d`.
 
-Ask a fifth question only when the unit is not clear from the text:
+Пятый вопрос задавайте только тогда, когда единицы измерения не ясны из текста:
 
-> Units in labels: none (default) / `$`, `€`, `%`, ` у.е.`, other?
+> Единицы в подписях: без единиц (по умолчанию) / `$`, `€`, `%`, ` у.е.`, другое?
 
-Map the answer to `value prefix '…'` or `value suffix '…'` (single quotes, keep
-leading spaces inside the quotes).
+Ответ превращается в `value prefix '…'` или `value suffix '…'` (одинарные
+кавычки, ведущие пробелы оставляйте внутри кавычек).
 
-## 3. Build the flows
+## 3. Постройте потоки
 
-One flow per line:
+Один поток — одна строка:
 
 ```
 SourceName [123.45] TargetName
 ```
 
-Hard rules:
+Жёсткие правила:
 
-- Amounts are plain numbers: no thousands separators, no currency symbols, no
-  percent signs. Decimals use a dot. Every amount is greater than zero.
-- No cycles and no self-flows; SankeyMATIC cannot render them.
-- A node that both receives and sends must balance: total in = total out.
-  Sources and sinks may be one-sided.
-- Aggregate duplicate source/target pairs into one line.
-- Percentages are computed from the total stated in the text, never from a
-  guessed base.
-- `[*]` and `[?]` (calculated flows) only when the user explicitly agrees.
-- Keep the user's wording for node names. Use `\n` inside a name for a line
-  break. Names are case sensitive.
+- Суммы — обычные числа: без разделителей тысяч, без валютных знаков и
+  процентов. Дробная часть через точку. Каждая сумма больше нуля.
+- Никаких циклов и потоков узла в себя: SankeyMATIC их не отрисует.
+- Узел, который и принимает, и отдаёт, должен сходиться: сумма входов равна
+  сумме выходов. Источники и стоки могут быть односторонними.
+- Одинаковые пары «источник → цель» объединяйте в одну строку.
+- Проценты считайте от итога, названного в тексте, а не от придуманной базы.
+- `[*]` и `[?]` (вычисляемые потоки) — только с явного согласия пользователя.
+- Сохраняйте формулировки пользователя для названий узлов. Для переноса строки
+  внутри подписи используйте `\n`. Регистр важен: `Revenue` и `revenue` — разные
+  узлы.
 
-Read `references/modeling.md` before modelling anything non-trivial.
+Перед моделированием чего-то нетривиального прочитайте
+`references/modeling.md`.
 
-## 4. Order the lines and write the source
+## 4. Упорядочьте строки и запишите исходник
 
-SankeyMATIC assigns theme colors by the order in which nodes first appear, so
-list stage-0 nodes first, in the intended color order, then each next stage.
-Flow lines grouped by source also keep `layout order exact` readable.
+SankeyMATIC назначает цвета темы в порядке первого появления узлов, поэтому
+сначала перечислите узлы первой стадии в нужном порядке цветов, затем каждую
+следующую стадию. Группировка строк по источнику делает `layout order exact`
+читаемым.
 
-Emit settings first, then flows:
+Сначала настройки, затем потоки:
 
 ```
 // === Settings ===
@@ -92,58 +96,59 @@ A [900] Revenue
 B [750] Revenue
 ```
 
-`flow inheritfrom source` is required: without it every flow is grey.
-Do not add settings the user did not choose, and do not change the diagram size
-(600 × 600) unless asked.
+`flow inheritfrom source` обязателен: без него все потоки серые.
+Не добавляйте настройки, которые пользователь не выбирал, и не меняйте размер
+диаграммы (600 × 600) без просьбы.
 
-## 5. Validate before delivering
+## 5. Проверьте перед выдачей
 
-From this skill's directory:
+Из каталога этого скилла:
 
 ```sh
-node scripts/validate.mjs <file>
+node scripts/validate.mjs <файл>
 ```
 
-Exit code 0 and `0 imbalances` are required. Fix the source and run it again —
-never deliver a file with errors. Warnings are real information: tell the user
-which node does not balance instead of hiding it.
+Нужны код выхода 0 и `0 дисбалансов`. Исправьте исходник и запустите снова —
+никогда не отдавайте файл с ошибками. Предупреждения — это информация:
+скажите пользователю, какой узел не сходится, вместо того чтобы это скрыть.
 
-## 6. Deliver
+## 6. Выдача
 
-1. Save the source as `<slug>.txt` in the working directory.
-2. Print the same text in a fenced block so it can be pasted into Inputs.
-3. Build a link that opens the finished diagram:
-
-   ```sh
-   node scripts/link.mjs <file>
-   ```
-
-4. For private data, offer the local preview instead — it serves a pinned copy
-   of SankeyMATIC from 127.0.0.1 and never sends the data anywhere:
+1. Сохраните исходник как `<slug>.txt` в рабочем каталоге.
+2. Выведите тот же текст в блоке кода, чтобы его можно было вставить в поле
+   Inputs.
+3. Соберите ссылку, которая открывает готовую диаграмму:
 
    ```sh
-   node scripts/local.mjs <file> --open
+   node scripts/link.mjs <файл>
    ```
 
-   The first run downloads about 750 KB into the cache; later runs are offline.
+4. Для приватных данных предложите локальный предпросмотр — он отдаёт
+   закреплённую копию SankeyMATIC с 127.0.0.1 и никуда не отправляет данные:
 
-Warn once that a share link contains the data itself in its `?i=` payload:
-anyone who gets the URL can read the diagram. Nothing is uploaded to
-sankeymatic.com.
+   ```sh
+   node scripts/local.mjs <файл> --open
+   ```
 
-5. To get an image, open the diagram and use **Save as .PNG** or
-   **Download .SVG** in the page. There is no local renderer.
+   Первый запуск скачивает около 750 КБ в кэш, дальше всё работает офлайн.
 
-## 7. Never
+Один раз предупредите, что ссылка содержит данные внутри payload `?i=`:
+любой, у кого есть URL, увидит диаграмму. На sankeymatic.com ничего не
+загружается.
 
-- Invent or round numbers to make a diagram balance.
-- Rename nodes the user already named.
-- Use negative or zero amounts, cycles, or self-flows.
-- Deliver without running the validator.
-- Add settings beyond the four answers and the optional units.
+5. Чтобы получить картинку, откройте диаграмму и нажмите **Save as .PNG** или
+   **Download .SVG** на странице. Локального рендерера нет.
 
-## References
+## 7. Чего нельзя
 
-- `references/modeling.md` — turning text into a balanced flow graph.
-- `references/syntax.md` — the full line grammar and settings.
-- `references/palettes.md` — theme letters and their hex colors.
+- Выдумывать или округлять числа, чтобы диаграмма сошлась.
+- Переименовывать узлы, которые пользователь уже назвал.
+- Использовать отрицательные и нулевые суммы, циклы и потоки узла в себя.
+- Отдавать результат, не запустив валидатор.
+- Добавлять настройки сверх четырёх ответов и необязательных единиц.
+
+## Справочники
+
+- `references/modeling.md` — как превратить текст в сбалансированный граф.
+- `references/syntax.md` — полная грамматика строк и настроек.
+- `references/palettes.md` — буквы тем и их цвета.

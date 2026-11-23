@@ -11,13 +11,13 @@ const HTML = `<!doctype html>
 <body></body>
 </html>`;
 
-test('rewrites CDN script tags to local files', () => {
+test('переписывает CDN-скрипты на локальные файлы', () => {
   const patched = patchHtml(HTML);
   assert.equal(patched.match(/cdn\.jsdelivr/g), null);
   assert.match(patched, /src="d3\.min\.js"/);
   assert.match(patched, /src="canvg\.umd\.js"/);
 });
 
-test('fails loudly when the upstream tags are missing', () => {
+test('явно падает, если исходных тегов нет', () => {
   assert.throws(() => patchHtml('<html></html>'), /d3/i);
 });

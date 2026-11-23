@@ -8,7 +8,7 @@ const fixture = readFileSync(
   'utf8'
 );
 
-test('builds a share link that decodes back to the source text', () => {
+test('собирает ссылку, которая декодируется обратно в исходный текст', () => {
   const link = buildLink(fixture);
   const url = new URL(link);
   assert.equal(`${url.origin}${url.pathname}`, 'https://sankeymatic.com/build/');
@@ -16,7 +16,7 @@ test('builds a share link that decodes back to the source text', () => {
   assert.match(url.search, /^\?i=/);
 });
 
-test('respects a custom base URL', () => {
+test('учитывает свой базовый URL', () => {
   const link = buildLink('A [1] B', 'http://127.0.0.1:8000/');
   assert.equal(new URL(link).origin, 'http://127.0.0.1:8000');
   assert.equal(decodeLink(link), 'A [1] B');
