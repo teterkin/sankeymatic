@@ -1,4 +1,4 @@
-# Диаграмма SankeyMATIC — скилл для OpenCode
+# Диаграмма SankeyMATIC — скилл для агентов
 
 Превращает текст, таблицу или описание словами в корректную диаграмму
 [SankeyMATIC](https://sankeymatic.com/build/): агент задаёт четыре вопроса с
@@ -27,7 +27,8 @@
 
 ## Требования
 
-- OpenCode 2.x.
+- Агент с поддержкой Agent Skills: OpenCode, Claude Code, OpenAI Codex или
+  VS Code Copilot. Проверено только в OpenCode 2.x.
 - Node.js 20 или новее для вспомогательных скриптов. Зависимостей npm нет.
 - Интернет для ссылки и для первого запуска локального предпросмотра.
 
@@ -35,43 +36,41 @@
 
 Дайте агенту одну строку:
 
-> Установи скилл отсюда: https://github.com/teterkin/sankeymatic
+> Установи скилл из https://github.com/teterkin/sankeymatic в каталог скиллов
+> своего агента под именем `sankeymatic`.
 
-Что это значит:
+Или клонируйте вручную:
 
-```sh
-git clone https://github.com/teterkin/sankeymatic.git \
-  ~/.config/opencode/skill/sankeymatic
-```
-
-Имя каталога — это ID скилла, поэтому оставьте `sankeymatic`. Если ваш OpenCode
-ищет скиллы в `~/.config/opencode/skills` (множественное число), клонируйте
-туда. Затем выполните `/reload` — скилл появится в списке доступных.
-
-Обновление и удаление:
-
-```sh
-git -C ~/.config/opencode/skill/sankeymatic pull --ff-only
-rm -rf ~/.config/opencode/skill/sankeymatic
-```
-
-## Без OpenCode
-
-Скилл проверен только в OpenCode. Формат `SKILL.md` соответствует открытому
-стандарту [Agent Skills](https://agentskills.io/specification), поэтому его
-можно положить в каталог скиллов другого агента — но там он не тестировался.
-Каталог должен называться `sankeymatic`: это `name` из frontmatter.
-
-| Агент | Куда клонировать |
+| Агент | Каталог |
 | --- | --- |
-| OpenCode | `~/.config/opencode/skills/sankeymatic` (или ваш `skill/`) |
+| OpenCode | `~/.config/opencode/skills/sankeymatic` (в старой раскладке — `skill/`) |
 | Claude Code | `~/.claude/skills/sankeymatic` |
 | OpenAI Codex | `~/.agents/skills/sankeymatic` |
 | VS Code Copilot | `~/.copilot/skills/sankeymatic` или `.github/skills/sankeymatic` в проекте |
 
-Агентам без скиллов (ChatGPT, Gemini, Cursor rules) можно отдать тело
-`SKILL.md` как инструкцию или сослаться на файл в `AGENTS.md`/правилах. Скрипты
-запускаются вручную из каталога скилла:
+```sh
+SKILL_DIR=~/.config/opencode/skills/sankeymatic   # подставьте каталог своего агента
+git clone https://github.com/teterkin/sankeymatic.git "$SKILL_DIR"
+```
+
+Каталог должен называться `sankeymatic`: стандарт Agent Skills требует, чтобы
+`name` во frontmatter совпадал с именем каталога. Перезагрузите агента — в
+OpenCode это `/reload`; в остальных скилл подхватывается сразу или после
+перезапуска (не тестировалось).
+
+Обновление и удаление:
+
+```sh
+SKILL_DIR=~/.config/opencode/skills/sankeymatic   # ваш каталог
+git -C "$SKILL_DIR" pull --ff-only
+rm -rf "$SKILL_DIR"
+```
+
+## Агенты без скиллов
+
+ChatGPT, Gemini, Cursor rules: отдайте тело `SKILL.md` как инструкцию или
+сослайтесь на файл в `AGENTS.md`/правилах. Скрипты запускаются вручную из
+каталога скилла:
 
 ```sh
 node scripts/layout.mjs диаграмма.txt --in-place

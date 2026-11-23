@@ -4,6 +4,14 @@
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), версии —
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-11-23
+
+### Изменено
+
+- README: единая установка для OpenCode, Claude Code, OpenAI Codex и
+  VS Code Copilot; оговорка «проверено только в OpenCode» сохранена.
+- Описание репозитория уточнено под несколько агентов.
+
 ## [0.2.0] - 2026-11-23
 
 ### Добавлено
@@ -77,6 +85,7 @@
 - Документация: README, справочники по моделированию, синтаксису и палитрам,
   AGENTS.md, NOTICE с атрибуцией ISC/MIT.
 
+[0.2.1]: https://github.com/teterkin/sankeymatic/releases/tag/v0.2.1
 [0.2.0]: https://github.com/teterkin/sankeymatic/releases/tag/v0.2.0
 [0.1.4]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.4
 [0.1.3]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.3
