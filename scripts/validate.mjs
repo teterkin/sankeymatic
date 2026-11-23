@@ -286,7 +286,7 @@ export function validate(text) {
   };
 }
 
-function plural(count, one, few, many) {
+export function plural(count, one, few, many) {
   const mod10 = count % 10;
   const mod100 = count % 100;
   if (mod100 >= 11 && mod100 <= 14) {

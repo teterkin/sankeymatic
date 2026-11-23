@@ -31,3 +31,8 @@ test('оговорка о проверке только в OpenCode присут
   assert.match(fields.compatibility, /только в OpenCode/i);
   assert.match(text, /проверен только в OpenCode/i);
 });
+
+test('скилл запрещает пересказывать payload ссылки', () => {
+  assert.match(text, /не пересказывайте/i);
+  assert.match(text, /--check/);
+});

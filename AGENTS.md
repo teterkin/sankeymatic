@@ -15,6 +15,7 @@
 | Проверить исходник диаграммы | `node scripts/validate.mjs <файл>` |
 | Подогнать полотно и подписи | `node scripts/layout.mjs <файл> --in-place` |
 | Собрать ссылку | `node scripts/link.mjs <файл>` |
+| Проверить ссылку | `node scripts/link.mjs --check '<ссылка>' [--expect <файл>]` |
 | Локальный предпросмотр (сеть при первом запуске) | `node scripts/local.mjs <файл> --open` |
 | Проверить кэш ассетов | `node scripts/local.mjs --check` |
 | Проверка безопасности (semgrep 1.186.0) | `semgrep scan --config p/javascript --config p/nodejsscan --config p/secrets --exclude scripts/vendor scripts/` |
