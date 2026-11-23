@@ -1,6 +1,7 @@
 // === Settings ===
 labelvalue position below
 labelposition scheme auto
+layout order exact
 labels relativesize 100
 size w 700
 size h 600
@@ -19,5 +20,5 @@ Revenue [1000] Gross Profit
 Gross Profit [640] SG&A
 Gross Profit [10] Amortization
 Gross Profit [350] Operating Profit
-Operating Profit [90] Tax
 Operating Profit [260] Net Profit
+Operating Profit [90] Tax

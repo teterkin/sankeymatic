@@ -11,6 +11,7 @@ const source = readFileSync(
 const SETTINGS = [
   'labelvalue position below',
   'labelposition scheme auto',
+  'layout order exact',
   'labels relativesize 100',
   'size w 700',
   'size h 600',

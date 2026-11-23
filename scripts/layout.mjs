@@ -9,6 +9,7 @@ const MANAGED = new Set([
   'labelvalue_position',
   'labelposition_scheme',
   'labels_relativesize',
+  'layout_order',
 ]);
 
 const DEFAULTS = {
@@ -161,9 +162,7 @@ export function planLayout(flows, options = {}) {
   }
   const greatest = Math.max(...nodesPerStage);
   const maxLines = Math.max(...linesPerStage.map((lines) => lines + 1));
-  const frameHeight = cfg.labelSize * 0.5 * 0.6;
-  const labelHeight = maxLines * cfg.labelSize * cfg.lineHeight
-    + frameHeight + 10;
+  const labelHeight = maxLines * cfg.labelSize * cfg.lineHeight + 12;
   const spacingFactor = (1 - cfg.nodeHF) * cfg.spacing;
   const rawHeight = spacingFactor > 0.01 && greatest > 1
     ? cfg.marginT + cfg.marginB + greatest
@@ -174,7 +173,7 @@ export function planLayout(flows, options = {}) {
     Math.max(cfg.baseHeight, Math.ceil(rawHeight / 50) * 50)
   );
 
-  return { stages, width, height, limit, names: wrapped };
+  return { stages, width, height, limit, names: wrapped, stageOf: stage };
 }
 
 function settingsOf(text) {
@@ -202,6 +201,7 @@ function managedLines(plan) {
   return [
     'labelvalue position below',
     'labelposition scheme auto',
+    'layout order exact',
     'labels relativesize 100',
     `size w ${plan.width}`,
     `size h ${plan.height}`,
@@ -222,6 +222,21 @@ export function layoutSource(text, overrides = {}) {
     nodeHF: numericSetting(settings, 'node_h', 50) / 100,
     spacing: numericSetting(settings, 'node_spacing', 85) / 100,
   });
+
+  const lastStage = plan.stages - 1;
+  const lastValue = new Map();
+  if (lastStage >= 0) {
+    for (const flow of flows) {
+      if (plan.stageOf.get(flow.target) !== lastStage) {
+        continue;
+      }
+      if (flow.amount === '*' || flow.amount === '?') {
+        continue;
+      }
+      lastValue.set(flow.target, (lastValue.get(flow.target) ?? 0) + Number(flow.amount));
+    }
+  }
+  const deferred = [];
 
   const lines = text.split(/\r?\n/);
   let insertAt = lines.findIndex((line) => line.trim() === '// === Settings ===');
@@ -252,10 +267,13 @@ export function layoutSource(text, overrides = {}) {
     if (flow) {
       const [, source, amount, target, color, opacity] = flow;
       const suffix = color ? ` #${color}${opacity ? `.${opacity}` : ''}` : '';
-      output.push(
-        `${plan.names.get(source) ?? source} [${amount}] `
-        + `${plan.names.get(target) ?? target}${suffix}`
-      );
+      const flowLine = `${plan.names.get(source) ?? source} [${amount}] `
+        + `${plan.names.get(target) ?? target}${suffix}`;
+      if (plan.stageOf.get(target) === lastStage) {
+        deferred.push({ text: flowLine, value: lastValue.get(target) ?? 0 });
+      } else {
+        output.push(flowLine);
+      }
     } else if (trimmed.startsWith(':')) {
       const declaration = trimmed.match(/^:(.+?)\s+(#[0-9a-f]{3,6}(?:\.\d{1,4})?.*)$/i);
       if (declaration) {
@@ -278,6 +296,12 @@ export function layoutSource(text, overrides = {}) {
   if (!inserted) {
     output.unshift(...managedLines(plan));
   }
+
+  while (output.length && output[output.length - 1] === '') {
+    output.pop();
+  }
+  deferred.sort((a, b) => b.value - a.value);
+  output.push(...deferred.map((item) => item.text));
 
   return `${output.join('\n').replace(/\n+$/, '')}\n`;
 }

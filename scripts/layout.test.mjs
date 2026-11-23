@@ -28,7 +28,7 @@ test('считает стадии и подбирает полотно для р
   });
   assert.equal(plan.stages, 5);
   assert.equal(plan.width, 850);
-  assert.equal(plan.height, 900);
+  assert.equal(plan.height, 850);
 
   const out = layoutSource(RU);
   const expected = validate(out);
@@ -38,9 +38,16 @@ test('считает стадии и подбирает полотно для р
 
   assert.match(out, /^labelvalue position below$/m);
   assert.match(out, /^labelposition scheme auto$/m);
+  assert.match(out, /^layout order exact$/m);
   assert.match(out, /^labels relativesize 100$/m);
   assert.match(out, /^size w 850$/m);
-  assert.match(out, /^size h 900$/m);
+  assert.match(out, /^size h 850$/m);
+
+  const lines = out.split('\n');
+  const netLine = lines.findIndex((line) => line === 'операционная прибыль [260] чистая прибыль');
+  const taxLine = lines.findIndex((line) => line === 'операционная прибыль [90] налоги');
+  assert.ok(netLine !== -1 && taxLine !== -1);
+  assert.ok(netLine < taxLine, 'крупный сток должен быть выше мелкого');
 
   for (const name of Object.keys(expected.stats.nodesByName)) {
     for (const part of name.split('\\n')) {
