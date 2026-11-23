@@ -9,6 +9,11 @@ const source = readFileSync(
 );
 
 const SETTINGS = [
+  'labelvalue position below',
+  'labelposition scheme auto',
+  'labels relativesize 100',
+  'size w 1150',
+  'size h 600',
   'labelname size 18',
   'node h 20',
   'node spacing 30',

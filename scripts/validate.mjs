@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const FLOW_RE =
+export const FLOW_RE =
   /^(.+?)\s+\[(\d+(?:\.\d+)?|\*|\?)\]\s+(.+?)(?:\s+#([0-9a-f]{3,6})(?:\.(\d{1,4}))?)?$/i;
 
 const NODE_RE = /^:(.+?)\s+#([0-9a-f]{3,6})(?:\.(\d{1,4}))?\s*(?:<<|>>)?\s*(?:<<|>>)?$/i;
@@ -116,7 +116,7 @@ function settingIsValid([type, min, max], raw) {
   }
 }
 
-function parseSetting(line) {
+export function parseSetting(line) {
   const two = line.match(/^(\S+)\s+(\S+)\s+(.+)$/);
   if (two) {
     const key = `${two[1]}_${two[2]}`;

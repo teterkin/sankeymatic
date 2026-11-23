@@ -4,6 +4,24 @@
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), версии —
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-11-23
+
+### Исправлено
+
+- Длинные подписи больше не налезают на соседние колонки: `scripts/layout.mjs`
+  переносит имена по словам и подбирает `size w` / `size h` под длину подписей
+  и число стадий.
+- Сумма больше не оказывается в одной строке с именем: скилл явно пишет
+  `labelvalue position below`, потому что сайт при открытии ссылки подставляет
+  `labelvalue position after`.
+- Ссылка и вставка в поле Inputs теперь выглядят одинаково:
+  `labelposition scheme auto` и `labels relativesize 100` задаются явно.
+
+### Добавлено
+
+- `scripts/layout.mjs` и `references/layout.md` с формулами полотна.
+- Golden-кейс с русскими подписями `tests/fixtures/pl-1800-ru.txt`.
+
 ## [0.1.0] - 2026-11-23
 
 ### Добавлено
@@ -24,4 +42,5 @@
 - Документация: README, справочники по моделированию, синтаксису и палитрам,
   AGENTS.md, NOTICE с атрибуцией ISC/MIT.
 
+[0.1.1]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.1
 [0.1.0]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.0
