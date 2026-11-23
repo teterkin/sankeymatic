@@ -4,6 +4,21 @@
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), версии —
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.6] - 2026-11-23
+
+### Добавлено
+
+- Проверка безопасности в CI: `.github/workflows/security.yml` — тесты,
+  CodeQL (`security-extended`) и gitleaks по всей истории. Экшены закреплены
+  коммит-SHA, бинарник gitleaks — по sha256; запуск на push, pull request, по
+  расписанию и вручную.
+
+### Исправлено
+
+- Гонки файловой системы в кэше и локальном сервере: чтение идёт через
+  дескриптор с `O_NOFOLLOW`, запись — в `*.part` с атомарным `renameSync`.
+  Закрывает два алерта CodeQL `js/file-system-race`.
+
 ## [0.2.5] - 2026-11-23
 
 ### Безопасность
