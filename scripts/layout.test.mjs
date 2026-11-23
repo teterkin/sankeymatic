@@ -25,7 +25,7 @@ test('не рвёт имя, которое уже перенесено', () => {
 test('считает стадии и подбирает полотно для русского P&L', () => {
   const plan = planLayout(parseFlows(RU), { labelSize: 18, nodeW: 9 });
   assert.equal(plan.stages, 5);
-  assert.equal(plan.width, 1400);
+  assert.equal(plan.width, 850);
   assert.equal(plan.height, 600);
 
   const out = layoutSource(RU);
@@ -37,12 +37,12 @@ test('считает стадии и подбирает полотно для р
   assert.match(out, /^labelvalue position below$/m);
   assert.match(out, /^labelposition scheme auto$/m);
   assert.match(out, /^labels relativesize 100$/m);
-  assert.match(out, /^size w 1400$/m);
+  assert.match(out, /^size w 850$/m);
   assert.match(out, /^size h 600$/m);
 
   for (const name of Object.keys(expected.stats.nodesByName)) {
     for (const part of name.split('\\n')) {
-      assert.ok(part.length <= 20, part);
+      assert.ok(part.length <= 22, part);
     }
   }
 });

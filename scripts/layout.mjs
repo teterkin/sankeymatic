@@ -22,9 +22,9 @@ const DEFAULTS = {
   maxWidth: 1600,
   baseHeight: 600,
   maxHeight: 1200,
-  charEm: 0.56,
+  charEm: 0.5,
   lineHeight: 1.3,
-  gapPadding: 20,
+  gapPadding: 10,
 };
 
 export function parseFlows(text) {
@@ -140,10 +140,9 @@ export function planLayout(flows, options = {}) {
   );
   const labelPx = longest * cfg.labelSize * cfg.charEm;
 
-  const graphWidth = (stages - 1) * (cfg.nodeW + labelPx + cfg.gapPadding)
-    + cfg.nodeW
-    + 5 * (stages - 1);
-  const rawWidth = cfg.marginL + cfg.marginR + 2 * labelPx + graphWidth;
+  const graphWidth = stages * cfg.nodeW
+    + (stages - 1) * (labelPx + cfg.gapPadding);
+  const rawWidth = cfg.marginL + cfg.marginR + graphWidth;
   const width = Math.min(
     cfg.maxWidth,
     Math.max(cfg.minWidth, Math.ceil(rawWidth / 50) * 50)

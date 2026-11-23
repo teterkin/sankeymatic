@@ -4,6 +4,15 @@
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), версии —
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2026-11-23
+
+### Исправлено
+
+- Полотно было слишком широким: формула из 0.1.1 резервировала ширину внешних
+  подписей дважды. Теперь ширина считается по зазорам между стадиями:
+  `поля + стадии * node_w + (стадии − 1) * (ширина подписи + 10)`.
+  Русский P&L — 850 px вместо 1400 (−39 %), английский — 700 вместо 1150.
+
 ## [0.1.1] - 2026-11-23
 
 ### Исправлено
@@ -42,5 +51,6 @@
 - Документация: README, справочники по моделированию, синтаксису и палитрам,
   AGENTS.md, NOTICE с атрибуцией ISC/MIT.
 
+[0.1.2]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.2
 [0.1.1]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.1
 [0.1.0]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.0
