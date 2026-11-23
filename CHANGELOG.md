@@ -4,6 +4,12 @@
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), версии —
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2026-11-23
+
+### Добавлено
+
+- Пример готовой диаграммы в README: `docs/images/result.png`.
+
 ## [0.1.3] - 2026-11-23
 
 ### Исправлено
@@ -59,6 +65,7 @@
 - Документация: README, справочники по моделированию, синтаксису и палитрам,
   AGENTS.md, NOTICE с атрибуцией ISC/MIT.
 
+[0.1.4]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.4
 [0.1.3]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.3
 [0.1.2]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.2
 [0.1.1]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.1
