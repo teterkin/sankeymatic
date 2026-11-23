@@ -25,7 +25,8 @@
 - [x] Прогнать сканер: semgrep 1.186.0, правила `p/javascript`,
       `p/nodejsscan`, `p/secrets`, `scripts/vendor` исключён — 0 находок на
       12 файлах; команда записана в `AGENTS.md`.
-- [ ] Объявить проверку безопасности в CI: `.github/workflows/security.yml`
-      (CodeQL + gitleaks, экшены по пину).
+- [x] Объявить проверку безопасности в CI: `.github/workflows/security.yml`
+      (тесты, CodeQL, gitleaks; экшены по коммит-SHA, бинарник по sha256).
+      Прогон зелёный, открытых алертов 0; один принятый — dismiss с причиной.
 - [x] `references/layout.md`: дописать `layout order exact` в список управляемых
       настроек (было 5 против 6 в `MANAGED`).
