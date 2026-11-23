@@ -63,12 +63,25 @@ git clone https://github.com/teterkin/sankeymatic.git "$SKILL_DIR"
 OpenCode это `/reload`; в остальных скилл подхватывается сразу или после
 перезапуска (не тестировалось).
 
-Обновление и удаление:
+### Обновление
 
 ```sh
 SKILL_DIR=~/.config/opencode/skills/sankeymatic   # ваш каталог
 git -C "$SKILL_DIR" pull --ff-only
-rm -rf "$SKILL_DIR"
+cat "$SKILL_DIR/VERSION"
+```
+
+`pull --ff-only` не перезаписывает локальные правки: если они есть, команда
+остановится с ошибкой. После обновления перезагрузите агента (`/reload`).
+
+### Удаление
+
+Удаляет весь клонированный каталог вместе с локальными правками — это не
+«выключить скилл», а стереть его.
+
+```sh
+SKILL_DIR=~/.config/opencode/skills/sankeymatic   # ваш каталог
+rm -rf -- "${SKILL_DIR:?задайте SKILL_DIR}"
 ```
 
 ## Агенты без скиллов
@@ -133,8 +146,14 @@ CDN-тега на локальные файлы, поднимает сервер
 node --test scripts/*.test.mjs
 node scripts/layout.mjs путь/к/диаграмме.txt --in-place
 node scripts/validate.mjs путь/к/диаграмме.txt
+node scripts/link.mjs --check '<ссылка>' --expect путь/к/диаграмме.txt
 node scripts/local.mjs --check
 ```
+
+Ссылка переносит диаграмму в `?i=` и не имеет контрольной суммы: один
+потерянный или лишний символ превращает payload в мусор, а сайт молча рисует
+свой пример Wages/Budget. `--check` распаковывает ссылку, считает узлы и
+потоки и сверяет текст с файлом; `--expect` необязателен.
 
 ## Структура проекта
 
