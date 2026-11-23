@@ -159,6 +159,6 @@ frontmatter.
 - `nowthis/sankeymatic@a6d8053`: `LICENSE.txt`, `build/index.html`,
   `build/constants.js`, `build/sankeymatic.js`, `build/build.css`,
   `build/lz-string.min.js`
-- npm: `d3@7.9.2` (ISC), `canvg@3.0.11` (MIT), `lz-string@1.5.0` (MIT)
+- npm: `d3@7.9.2` (ISC), `canvg@3.0.11` (MIT), `lz-string@1.4.4` (MIT)
 - `https://opencode.ai/docs/skills`, OpenCode `v2.3.2`
 - Node.js `v20.11.1`

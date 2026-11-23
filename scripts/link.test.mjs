@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { buildLink, decodeLink } from './link.mjs';
+import { buildLink, decodeLink, loadLzString } from './link.mjs';
 
 const fixture = readFileSync(
   new URL('../tests/fixtures/pl-1800.expected.txt', import.meta.url),
@@ -14,6 +14,21 @@ test('собирает ссылку, которая декодируется о�
   assert.equal(`${url.origin}${url.pathname}`, 'https://sankeymatic.com/build/');
   assert.equal(decodeLink(link), fixture);
   assert.match(url.search, /^\?i=/);
+});
+
+test('отказывается исполнять вендорный файл с несовпавшим хэшем', () => {
+  assert.throws(
+    () => loadLzString('var LZString = 1;', '0'.repeat(64)),
+    /контрольной суммы для lz-string/
+  );
+});
+
+test('payload совпадает с эталоном, снятым с копии сайта', () => {
+  const golden = readFileSync(
+    new URL('../tests/fixtures/pl-1800.payload.txt', import.meta.url),
+    'utf8'
+  ).trim();
+  assert.equal(new URL(buildLink(fixture)).search.slice(3), golden);
 });
 
 test('учитывает свой базовый URL', () => {

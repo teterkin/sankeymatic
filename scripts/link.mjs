@@ -1,16 +1,24 @@
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const DEFAULT_BASE = 'https://sankeymatic.com/build/';
+const VENDOR_SHA256 = '9d1a0ef07a2ea5faa8cd4afb60a0518075e6771e341e5ff4e0e481cefedeecbf';
 
-const LZString = (() => {
-  const code = readFileSync(
-    new URL('./vendor/lz-string.min.js', import.meta.url),
-    'utf8'
-  );
+export function loadLzString(code, expected = VENDOR_SHA256) {
+  const digest = createHash('sha256').update(code).digest('hex');
+  if (digest !== expected) {
+    throw new Error(
+      `несовпадение контрольной суммы для lz-string: ожидалось ${expected}, получено ${digest}`
+    );
+  }
   return new Function(`${code}; return LZString;`)();
-})();
+}
+
+const LZString = loadLzString(
+  readFileSync(new URL('./vendor/lz-string.min.js', import.meta.url), 'utf8')
+);
 
 export function buildLink(text, base = DEFAULT_BASE) {
   const compressed = LZString.compressToEncodedURIComponent(text);

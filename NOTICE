@@ -88,7 +88,13 @@ lz-string
 ---------
 https://github.com/pieroxy/lz-string
 Вендоренный файл: scripts/vendor/lz-string.min.js
-Взят из закреплённой сборки SankeyMATIC выше.
+Версия: 1.4.4, npm-артефакт `libs/lz-string.min.js`
+sha256: 9d1a0ef07a2ea5faa8cd4afb60a0518075e6771e341e5ff4e0e481cefedeecbf
+
+Сборка SankeyMATIC поставляет свою минифицированную копию тех же исходников.
+Её вывод сжатия совпадает с публичной 1.4.4; это закреплено эталоном
+`tests/fixtures/pl-1800.payload.txt`. `link.mjs` сверяет sha256 файла перед
+исполнением.
 
 MIT License
 
