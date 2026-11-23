@@ -1,0 +1,18 @@
+// === Settings ===
+labelname size 18
+node h 20
+node spacing 30
+node theme a
+flow inheritfrom source
+flow opacity 0.45
+
+A [900] Revenue
+B [750] Revenue
+C [150] Revenue
+Revenue [800] Cost of Sales
+Revenue [1000] Gross Profit
+Gross Profit [640] SG&A
+Gross Profit [10] Amortization
+Gross Profit [350] Operating Profit
+Operating Profit [90] Tax
+Operating Profit [260] Net Profit
