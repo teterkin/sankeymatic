@@ -1,5 +1,5 @@
 import { createServer } from 'node:http';
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import { closeSync, fstatSync, openSync, readFileSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import { extname, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -40,6 +40,11 @@ export function resolveAsset(root, pathname) {
   return full;
 }
 
+function notFound(res) {
+  res.writeHead(404);
+  res.end('not found');
+}
+
 export function staticHandler(root) {
   return (req, res) => {
     let pathname;
@@ -52,16 +57,31 @@ export function staticHandler(root) {
     }
 
     const file = resolveAsset(root, pathname);
-    if (!file || !existsSync(file) || !statSync(file).isFile()) {
-      res.writeHead(404);
-      res.end('not found');
+    if (!file) {
+      notFound(res);
       return;
     }
 
-    res.writeHead(200, {
-      'content-type': TYPES.get(extname(file).toLowerCase()) ?? 'application/octet-stream',
-    });
-    res.end(readFileSync(file));
+    let handle;
+    try {
+      handle = openSync(file, 'r');
+    } catch {
+      notFound(res);
+      return;
+    }
+
+    try {
+      if (!fstatSync(handle).isFile()) {
+        notFound(res);
+        return;
+      }
+      res.writeHead(200, {
+        'content-type': TYPES.get(extname(file).toLowerCase()) ?? 'application/octet-stream',
+      });
+      res.end(readFileSync(handle));
+    } finally {
+      closeSync(handle);
+    }
   };
 }
 

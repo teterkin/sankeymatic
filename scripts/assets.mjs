@@ -1,10 +1,14 @@
 import { createHash } from 'node:crypto';
 import {
   chmodSync,
+  closeSync,
+  constants,
   existsSync,
-  lstatSync,
+  fstatSync,
   mkdirSync,
+  openSync,
   readFileSync,
+  renameSync,
   writeFileSync,
 } from 'node:fs';
 import { homedir } from 'node:os';
@@ -87,15 +91,26 @@ export function cacheDir() {
   return join(base, 'sankeymatic-skill', PIN);
 }
 
-function assertRegularFile(target) {
+function readPinned(target, expected) {
+  let handle;
   try {
-    if (!lstatSync(target).isFile()) {
+    handle = openSync(target, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0));
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return false;
+    }
+    if (error.code === 'ELOOP') {
       throw new Error(`в кэше не обычный файл: ${target}`);
     }
-  } catch (error) {
-    if (error.code !== 'ENOENT') {
-      throw error;
+    throw error;
+  }
+  try {
+    if (!fstatSync(handle).isFile()) {
+      throw new Error(`в кэше не обычный файл: ${target}`);
     }
+    return sha256(readFileSync(handle)) === expected;
+  } finally {
+    closeSync(handle);
   }
 }
 
@@ -113,8 +128,7 @@ export async function ensureAssets({
 
   for (const [name, asset] of ASSETS) {
     const target = join(dir, name);
-    assertRegularFile(target);
-    if (existsSync(target) && sha256(readFileSync(target)) === asset.sha256) {
+    if (readPinned(target, asset.sha256)) {
       continue;
     }
     if (!allowDownload) {
@@ -141,7 +155,9 @@ export async function ensureAssets({
       );
     }
     mkdirSync(dirname(target), { recursive: true });
-    writeFileSync(target, body);
+    const partial = `${target}.${process.pid}.part`;
+    writeFileSync(partial, body);
+    renameSync(partial, target);
   }
 
   writeFileSync(
