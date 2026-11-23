@@ -17,6 +17,7 @@
 | Собрать ссылку | `node scripts/link.mjs <файл>` |
 | Локальный предпросмотр (сеть при первом запуске) | `node scripts/local.mjs <файл> --open` |
 | Проверить кэш ассетов | `node scripts/local.mjs --check` |
+| Проверка безопасности (semgrep 1.186.0) | `semgrep scan --config p/javascript --config p/nodejsscan --config p/secrets --exclude scripts/vendor scripts/` |
 
 Node 20+. Все скрипты используют только встроенные модули.
 

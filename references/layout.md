@@ -30,6 +30,7 @@ node scripts/layout.mjs <файл> --in-place
 ```
 labelvalue position below
 labelposition scheme auto
+layout order exact
 labels relativesize 100
 size w <ширина>
 size h <высота>

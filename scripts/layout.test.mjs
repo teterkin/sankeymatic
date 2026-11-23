@@ -1,8 +1,19 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { layoutSource, parseFlows, planLayout, wrapLabel } from './layout.mjs';
 import { validate } from './validate.mjs';
+
+const SCRIPT = new URL('./layout.mjs', import.meta.url).pathname;
+
+function tempChart(text) {
+  const file = join(mkdtempSync(join(tmpdir(), 'skm-layout-')), 'chart.txt');
+  writeFileSync(file, text);
+  return file;
+}
 
 const RU = readFileSync(
   new URL('../tests/fixtures/pl-1800-ru.txt', import.meta.url),
@@ -70,4 +81,28 @@ test('сохраняет выбранные настройки и суммы', (
 test('повторный запуск не меняет результат', () => {
   const once = layoutSource(RU);
   assert.equal(layoutSource(once), once);
+});
+
+test('CLI: отклоняет нечисловой --label-size и не трогает файл', () => {
+  const file = tempChart('A [1] B\n');
+
+  const result = spawnSync(
+    process.execPath,
+    [SCRIPT, file, '--in-place', '--label-size', 'abc'],
+    { encoding: 'utf8' }
+  );
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /label-size/);
+  assert.equal(readFileSync(file, 'utf8'), 'A [1] B\n');
+});
+
+test('CLI: сообщает о цикле без стека', () => {
+  const file = tempChart('A [1] B\nB [1] A\n');
+
+  const result = spawnSync(process.execPath, [SCRIPT, file], { encoding: 'utf8' });
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /в потоках есть цикл/);
+  assert.doesNotMatch(result.stderr, /at computeStages/);
 });

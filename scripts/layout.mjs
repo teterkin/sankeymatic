@@ -317,12 +317,21 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     console.error('использование: node layout.mjs <файл> [--in-place] [--label-size N]');
     process.exit(2);
   }
+  if (labelSize !== undefined && !(Number.isFinite(labelSize) && labelSize > 0)) {
+    console.error('использование: node layout.mjs <файл> [--in-place] [--label-size N]');
+    process.exit(2);
+  }
 
-  const result = layoutSource(readFileSync(file, 'utf8'), { labelSize });
-  if (inPlace) {
-    writeFileSync(file, result);
-    console.log(`ок: ${file}`);
-  } else {
-    process.stdout.write(result);
+  try {
+    const result = layoutSource(readFileSync(file, 'utf8'), { labelSize });
+    if (inPlace) {
+      writeFileSync(file, result);
+      console.log(`ок: ${file}`);
+    } else {
+      process.stdout.write(result);
+    }
+  } catch (error) {
+    console.error(`ошибка: ${error.message}`);
+    process.exit(1);
   }
 }
