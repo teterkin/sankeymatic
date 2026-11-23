@@ -20,6 +20,8 @@ const DEFAULTS = {
   marginB: 20,
   minWidth: 600,
   maxWidth: 1600,
+  nodeHF: 0.5,
+  spacing: 0.85,
   baseHeight: 600,
   maxHeight: 1200,
   charEm: 0.5,
@@ -157,12 +159,14 @@ export function planLayout(flows, options = {}) {
       wrapped.get(name).split('\\n').length
     );
   }
-  const tallestBlock = Math.max(
-    0,
-    ...nodesPerStage.map((count, index) => count
-      * ((linesPerStage[index] + 1) * cfg.labelSize * cfg.lineHeight + 34))
-  );
-  const rawHeight = cfg.marginT + cfg.marginB + tallestBlock;
+  const greatest = Math.max(...nodesPerStage);
+  const maxLines = Math.max(...linesPerStage.map((lines) => lines + 1));
+  const labelHeight = maxLines * cfg.labelSize * cfg.lineHeight + 12;
+  const spacingFactor = (1 - cfg.nodeHF) * cfg.spacing;
+  const rawHeight = spacingFactor > 0.01 && greatest > 1
+    ? cfg.marginT + cfg.marginB + greatest
+      + ((greatest - 1) * labelHeight) / spacingFactor
+    : cfg.marginT + cfg.marginB + greatest * (labelHeight + 24);
   const height = Math.min(
     cfg.maxHeight,
     Math.max(cfg.baseHeight, Math.ceil(rawHeight / 50) * 50)
@@ -213,6 +217,8 @@ export function layoutSource(text, overrides = {}) {
     marginR: numericSetting(settings, 'margin_r', DEFAULTS.marginR),
     marginT: numericSetting(settings, 'margin_t', DEFAULTS.marginT),
     marginB: numericSetting(settings, 'margin_b', DEFAULTS.marginB),
+    nodeHF: numericSetting(settings, 'node_h', 50) / 100,
+    spacing: numericSetting(settings, 'node_spacing', 85) / 100,
   });
 
   const lines = text.split(/\r?\n/);

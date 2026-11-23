@@ -4,6 +4,14 @@
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), версии —
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2026-11-23
+
+### Исправлено
+
+- Подписи больше не налезают по вертикали: высота полотна считается по
+  фактическому зазору между узлами (`node h`, `node spacing`) и высоте подписи,
+  а не по числу узлов. Русский P&L — 850 px вместо 600.
+
 ## [0.1.2] - 2026-11-23
 
 ### Исправлено
@@ -51,6 +59,7 @@
 - Документация: README, справочники по моделированию, синтаксису и палитрам,
   AGENTS.md, NOTICE с атрибуцией ISC/MIT.
 
+[0.1.3]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.3
 [0.1.2]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.2
 [0.1.1]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.1
 [0.1.0]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.0
