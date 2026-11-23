@@ -14,6 +14,16 @@ const TYPES = new Map([
   ['.svg', 'image/svg+xml'],
 ]);
 
+export function openCommand(url, platform = process.platform) {
+  if (platform === 'darwin') {
+    return ['open', [url]];
+  }
+  if (platform === 'win32') {
+    return ['cmd', ['/c', 'start', '', url]];
+  }
+  return ['xdg-open', [url]];
+}
+
 export function resolveAsset(root, pathname) {
   let decoded;
   try {
@@ -85,7 +95,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       const link = buildLink(text, `http://127.0.0.1:${port}/`);
       console.log(link);
       if (shouldOpen) {
-        spawn('open', [link], { stdio: 'ignore', detached: true }).unref();
+        const [command, commandArgs] = openCommand(link);
+        spawn(command, commandArgs, { stdio: 'ignore', detached: true }).unref();
       }
     });
   } catch (error) {

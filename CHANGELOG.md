@@ -4,6 +4,18 @@
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), версии —
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-11-23
+
+### Добавлено
+
+- Соответствие открытому стандарту Agent Skills: `name: sankeymatic`,
+  `license: MIT`, `compatibility`. Скилл можно установить в Claude Code,
+  OpenAI Codex и VS Code Copilot по их каталогам скиллов.
+- Раздел README «Без OpenCode» с оговоркой, что скилл проверен только в
+  OpenCode.
+- `local.mjs --open` выбирает `open` / `xdg-open` / `start` по платформе.
+- Тест `scripts/skill.test.mjs` проверяет frontmatter по стандарту.
+
 ## [0.1.4] - 2026-11-23
 
 ### Добавлено
@@ -65,6 +77,7 @@
 - Документация: README, справочники по моделированию, синтаксису и палитрам,
   AGENTS.md, NOTICE с атрибуцией ISC/MIT.
 
+[0.2.0]: https://github.com/teterkin/sankeymatic/releases/tag/v0.2.0
 [0.1.4]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.4
 [0.1.3]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.3
 [0.1.2]: https://github.com/teterkin/sankeymatic/releases/tag/v0.1.2

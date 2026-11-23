@@ -4,7 +4,7 @@ import { createServer } from 'node:http';
 import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { resolveAsset, staticHandler } from './local.mjs';
+import { openCommand, resolveAsset, staticHandler } from './local.mjs';
 
 test('отдаёт index.html на / и 404 на отсутствующий файл', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'skm-'));
@@ -31,4 +31,13 @@ test('не отдаёт файлы за пределами каталога ас
     null
   );
   assert.equal(resolveAsset('/tmp/assets', '/build.css'), '/tmp/assets/build.css');
+});
+
+test('выбирает команду открытия по платформе', () => {
+  assert.deepEqual(openCommand('http://x', 'darwin'), ['open', ['http://x']]);
+  assert.deepEqual(openCommand('http://x', 'linux'), ['xdg-open', ['http://x']]);
+  assert.deepEqual(openCommand('http://x', 'win32'), [
+    'cmd',
+    ['/c', 'start', '', 'http://x'],
+  ]);
 });

@@ -55,6 +55,30 @@ git -C ~/.config/opencode/skill/sankeymatic pull --ff-only
 rm -rf ~/.config/opencode/skill/sankeymatic
 ```
 
+## Без OpenCode
+
+Скилл проверен только в OpenCode. Формат `SKILL.md` соответствует открытому
+стандарту [Agent Skills](https://agentskills.io/specification), поэтому его
+можно положить в каталог скиллов другого агента — но там он не тестировался.
+Каталог должен называться `sankeymatic`: это `name` из frontmatter.
+
+| Агент | Куда клонировать |
+| --- | --- |
+| OpenCode | `~/.config/opencode/skills/sankeymatic` (или ваш `skill/`) |
+| Claude Code | `~/.claude/skills/sankeymatic` |
+| OpenAI Codex | `~/.agents/skills/sankeymatic` |
+| VS Code Copilot | `~/.copilot/skills/sankeymatic` или `.github/skills/sankeymatic` в проекте |
+
+Агентам без скиллов (ChatGPT, Gemini, Cursor rules) можно отдать тело
+`SKILL.md` как инструкцию или сослаться на файл в `AGENTS.md`/правилах. Скрипты
+запускаются вручную из каталога скилла:
+
+```sh
+node scripts/layout.mjs диаграмма.txt --in-place
+node scripts/validate.mjs диаграмма.txt
+node scripts/link.mjs диаграмма.txt
+```
+
 ## Использование
 
 Спросите обычными словами и вставьте данные:
