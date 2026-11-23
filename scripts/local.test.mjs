@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { existsSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { openCommand, resolveAsset, staticHandler } from './local.mjs';
@@ -31,6 +32,21 @@ test('не отдаёт файлы за пределами каталога ас
     null
   );
   assert.equal(resolveAsset('/tmp/assets', '/build.css'), '/tmp/assets/build.css');
+});
+
+test('--check на пустом кэше не скачивает и выходит с кодом 2', () => {
+  const empty = mkdtempSync(join(tmpdir(), 'skm-empty-'));
+  const script = new URL('./local.mjs', import.meta.url).pathname;
+
+  const result = spawnSync(process.execPath, [script, '--check'], {
+    encoding: 'utf8',
+    env: { ...process.env, XDG_CACHE_HOME: empty },
+  });
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /кэш/);
+  assert.doesNotMatch(result.stderr, /скачиваю/);
+  assert.equal(existsSync(join(empty, 'sankeymatic-skill')), false);
 });
 
 test('выбирает команду открытия по платформе', () => {

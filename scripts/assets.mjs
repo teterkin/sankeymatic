@@ -1,7 +1,16 @@
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import {
+  chmodSync,
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
+
+const MAX_ASSET_BYTES = 2 * 1024 * 1024;
 
 export const PIN = 'a6d8053e766c45336ec3a0b7fb778d71eef8245c';
 export const D3_VERSION = '7.9.2';
@@ -78,14 +87,38 @@ export function cacheDir() {
   return join(base, 'sankeymatic-skill', PIN);
 }
 
-export async function ensureAssets({ fetchImpl = fetch, log = () => {} } = {}) {
+function assertRegularFile(target) {
+  try {
+    if (!lstatSync(target).isFile()) {
+      throw new Error(`в кэше не обычный файл: ${target}`);
+    }
+  } catch (error) {
+    if (error.code !== 'ENOENT') {
+      throw error;
+    }
+  }
+}
+
+export async function ensureAssets({
+  fetchImpl = fetch,
+  log = () => {},
+  allowDownload = true,
+} = {}) {
   const dir = cacheDir();
+  if (!allowDownload && !existsSync(dir)) {
+    throw new Error(`кэш не найден: ${dir}`);
+  }
   mkdirSync(dir, { recursive: true });
+  chmodSync(dir, 0o700);
 
   for (const [name, asset] of ASSETS) {
     const target = join(dir, name);
+    assertRegularFile(target);
     if (existsSync(target) && sha256(readFileSync(target)) === asset.sha256) {
       continue;
+    }
+    if (!allowDownload) {
+      throw new Error(`кэш неполный: ${name}; запустите node scripts/local.mjs <файл>`);
     }
 
     log(`скачиваю ${name}`);
@@ -93,7 +126,14 @@ export async function ensureAssets({ fetchImpl = fetch, log = () => {} } = {}) {
     if (!response.ok) {
       throw new Error(`не удалось скачать ${name}: HTTP ${response.status}`);
     }
+    const declared = Number(response.headers.get('content-length'));
+    if (Number.isFinite(declared) && declared > MAX_ASSET_BYTES) {
+      throw new Error(`слишком большой ответ для ${name}: ${declared} байт`);
+    }
     const body = Buffer.from(await response.arrayBuffer());
+    if (body.length > MAX_ASSET_BYTES) {
+      throw new Error(`слишком большой ответ для ${name}: ${body.length} байт`);
+    }
     const digest = sha256(body);
     if (digest !== asset.sha256) {
       throw new Error(

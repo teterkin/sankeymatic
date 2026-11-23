@@ -72,7 +72,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   const shouldOpen = args.includes('--open');
 
   try {
-    const dir = await ensureAssets({ log: (message) => console.error(message) });
+    const dir = await ensureAssets({
+      log: (message) => console.error(message),
+      allowDownload: !checkOnly,
+    });
     const page = readFileSync(resolve(dir, 'index.html'), 'utf8');
     if (page.includes('cdn.jsdelivr')) {
       throw new Error('страница всё ещё ссылается на CDN');
@@ -101,6 +104,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     });
   } catch (error) {
     console.error(error.message);
-    process.exit(1);
+    process.exit(checkOnly ? 2 : 1);
   }
 }
